@@ -4,12 +4,13 @@ import (
     "testing"
     "os"
     "log"
+    "path"
 )
 
 func TestPMX_Load(t *testing.T) {
     p := new(PMX)
-    path, _ := os.Getwd()
-    err := p.Load(path+"/test_data", "test.pmx")
+    dir, _ := os.Getwd()
+    err := p.Load(path.Join(dir, "test_data"), "test.pmx")
     if err != nil{
         t.Error(err)
     }

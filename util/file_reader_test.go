@@ -5,11 +5,12 @@ import (
     "os"
     "log"
     "golang.org/x/text/encoding/japanese"
+    "path"
 )
 
 func TestFileReader_GetFloatBig(t *testing.T) {
     fr := new(FileReader)
-    f, err := os.Open("test_data/test")
+    f, err := os.Open(path.Join("test_data","test"))
     if err!=nil{
         t.Error(err)
         return

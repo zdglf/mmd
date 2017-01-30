@@ -6,6 +6,7 @@ import (
     "errors"
     "golang.org/x/text/encoding/unicode"
     "log"
+    "path"
 )
 
 const(
@@ -1304,7 +1305,7 @@ func (p *PMX)Load(directory, fileName string)(err error)  {
     p.Directory = directory
     p.FileName = fileName
     var f *os.File
-    if f, err = os.Open(directory+"/"+fileName);err!=nil {
+    if f, err = os.Open(path.Join(directory, fileName));err!=nil {
         return
     }
     defer f.Close()

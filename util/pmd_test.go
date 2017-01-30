@@ -4,6 +4,7 @@ import (
     "testing"
     "os"
     "log"
+    "path"
 )
 
 func TestPMD_Load(t *testing.T) {
@@ -11,8 +12,8 @@ func TestPMD_Load(t *testing.T) {
 
 
     p := new(PMD)
-    path, _ := os.Getwd()
-    err := p.Load(path+"/test_data", "alice.pmd")
+    dir, _ := os.Getwd()
+    err := p.Load(path.Join(dir, "test_data"), "alice.pmd")
     if err != nil{
         t.Error(err)
     }
