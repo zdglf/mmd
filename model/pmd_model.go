@@ -1,7 +1,7 @@
 package model
 
 import (
-    "git.oschina.net/zdglf/mmd/util"
+    "github.com/zdglf/mmd/util"
     "log"
 
 )

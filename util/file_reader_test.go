@@ -30,13 +30,13 @@ func TestFileReader_GetFloatBig(t *testing.T) {
     }else{
         t.Error(err)
     }
-    if name, err := fr.GetString(20, japanese.ShiftJIS.NewDecoder()); err == nil{
-        log.Println(name)
-    }else{
-        t.Error(err)
-    }
-    if comment, err := fr.GetString(256, japanese.ShiftJIS.NewDecoder()); err == nil{
-        log.Println(comment)
+    if name, err := fr.GetStringTrim(20, japanese.ShiftJIS.NewDecoder()); err == nil{
+        if name == "ダミーボーン"{
+            log.Println(name)
+
+        }else{
+            t.Error(name, "is not ダミーボーン")
+        }
     }else{
         t.Error(err)
     }

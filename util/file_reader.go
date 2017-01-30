@@ -105,11 +105,40 @@ func (fr *FileReader)GetStringTrim(size int, decoder *encoding.Decoder)(data str
     data = ""
     if(fr.f!=nil){
         bits := make([]byte, size)
-        index := bytes.IndexByte(bits, 0)
         _, err = fr.f.Read(bits)
+        index := bytes.IndexByte(bits, 0)
         rInUTF8 := transform.NewReader(bytes.NewReader(bits[:index]), decoder)
         decBytes, _ := ioutil.ReadAll(rInUTF8)
         data = string(decBytes)
+
+    }else{
+        err = errors.New("file not set")
+    }
+    return data, err
+
+}
+
+func (fr *FileReader)GetStringUTF8(size int)(data string,err error){
+    data = ""
+    if(fr.f!=nil){
+        bits := make([]byte, size)
+        _, err = fr.f.Read(bits)
+        data = string(bits)
+
+    }else{
+        err = errors.New("file not set")
+    }
+    return data, err
+
+}
+
+func (fr *FileReader)GetStringUTF8Trim(size int)(data string,err error){
+    data = ""
+    if(fr.f!=nil){
+        bits := make([]byte, size)
+        _, err = fr.f.Read(bits)
+        index := bytes.IndexByte(bits, 0)
+        data = string(bits[:index])
 
     }else{
         err = errors.New("file not set")

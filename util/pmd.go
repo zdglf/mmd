@@ -645,10 +645,10 @@ func (p *PMD)checkHeader() (err error){
 }
 
 func (p *PMD)parseName() (err error){
-    if p.Name, err = p.fr.GetString(20, japanese.ShiftJIS.NewDecoder());err != nil{
+    if p.Name, err = p.fr.GetStringTrim(20, japanese.ShiftJIS.NewDecoder());err != nil{
         return
     }
-    if p.Comment, err = p.fr.GetString(256, japanese.ShiftJIS.NewDecoder());err != nil{
+    if p.Comment, err = p.fr.GetStringTrim(256, japanese.ShiftJIS.NewDecoder());err != nil{
         return
     }
     return

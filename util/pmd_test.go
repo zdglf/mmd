@@ -12,12 +12,16 @@ func TestPMD_Load(t *testing.T) {
 
     p := new(PMD)
     path, _ := os.Getwd()
-    log.Println(path)
     err := p.Load(path+"/test_data", "alice.pmd")
     if err != nil{
         t.Error(err)
     }
-    log.Println(p.Name)
-    log.Println(p.Comment)
+    if p.Name == "門を開く者 アリス"{
+        log.Println(p.Name)
+    }else{
+        t.Error(p.Name, "is not 門を開く者 アリス")
+    }
+
+    //log.Println(p.Comment)
 
 }
