@@ -203,6 +203,8 @@ type PMDMaterial struct {
     FaceVertCount int;
     //材质的文件名（可以为空）
     TextureFileName string
+
+    Textures map[string]int32
 }
 
 func NewPMDMaterial(f *FileReader) (m *PMDMaterial, err error)  {

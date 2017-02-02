@@ -15,20 +15,20 @@ import "C"
 import "unsafe"
 
 // ActiveTexture function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glActiveTexture.xml
-func ActiveTexture(texture uint32) {
+func ActiveTexture(texture int32) {
 	ctexture, _ := (C.GLenum)(texture), cgoAllocsUnknown
 	C.glActiveTexture(ctexture)
 }
 
 // AttachShader function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glAttachShader.xml
-func AttachShader(program uint32, shader uint32) {
+func AttachShader(program int32, shader int32) {
 	cprogram, _ := (C.GLuint)(program), cgoAllocsUnknown
 	cshader, _ := (C.GLuint)(shader), cgoAllocsUnknown
 	C.glAttachShader(cprogram, cshader)
 }
 
 // BindAttribLocation function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glBindAttribLocation.xml
-func BindAttribLocation(program uint32, index uint32, name string) {
+func BindAttribLocation(program int32, index int32, name string) {
 	cprogram, _ := (C.GLuint)(program), cgoAllocsUnknown
 	cindex, _ := (C.GLuint)(index), cgoAllocsUnknown
 	cname, _ := unpackPCharString(name)
@@ -36,28 +36,28 @@ func BindAttribLocation(program uint32, index uint32, name string) {
 }
 
 // BindBuffer function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glBindBuffer.xml
-func BindBuffer(target uint32, buffer uint32) {
+func BindBuffer(target int32, buffer int32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	cbuffer, _ := (C.GLuint)(buffer), cgoAllocsUnknown
 	C.glBindBuffer(ctarget, cbuffer)
 }
 
 // BindFramebuffer function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glBindFramebuffer.xml
-func BindFramebuffer(target uint32, framebuffer uint32) {
+func BindFramebuffer(target int32, framebuffer int32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	cframebuffer, _ := (C.GLuint)(framebuffer), cgoAllocsUnknown
 	C.glBindFramebuffer(ctarget, cframebuffer)
 }
 
 // BindRenderbuffer function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glBindRenderbuffer.xml
-func BindRenderbuffer(target uint32, renderbuffer uint32) {
+func BindRenderbuffer(target int32, renderbuffer int32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	crenderbuffer, _ := (C.GLuint)(renderbuffer), cgoAllocsUnknown
 	C.glBindRenderbuffer(ctarget, crenderbuffer)
 }
 
 // BindTexture function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glBindTexture.xml
-func BindTexture(target uint32, texture uint32) {
+func BindTexture(target int32, texture int32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	ctexture, _ := (C.GLuint)(texture), cgoAllocsUnknown
 	C.glBindTexture(ctarget, ctexture)
@@ -73,27 +73,27 @@ func BlendColor(red float32, green float32, blue float32, alpha float32) {
 }
 
 // BlendEquation function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glBlendEquation.xml
-func BlendEquation(mode uint32) {
+func BlendEquation(mode int32) {
 	cmode, _ := (C.GLenum)(mode), cgoAllocsUnknown
 	C.glBlendEquation(cmode)
 }
 
 // BlendEquationSeparate function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glBlendEquationSeparate.xml
-func BlendEquationSeparate(modeRGB uint32, modeAlpha uint32) {
+func BlendEquationSeparate(modeRGB int32, modeAlpha int32) {
 	cmodeRGB, _ := (C.GLenum)(modeRGB), cgoAllocsUnknown
 	cmodeAlpha, _ := (C.GLenum)(modeAlpha), cgoAllocsUnknown
 	C.glBlendEquationSeparate(cmodeRGB, cmodeAlpha)
 }
 
 // BlendFunc function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glBlendFunc.xml
-func BlendFunc(sfactor uint32, dfactor uint32) {
+func BlendFunc(sfactor int32, dfactor int32) {
 	csfactor, _ := (C.GLenum)(sfactor), cgoAllocsUnknown
 	cdfactor, _ := (C.GLenum)(dfactor), cgoAllocsUnknown
 	C.glBlendFunc(csfactor, cdfactor)
 }
 
 // BlendFuncSeparate function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glBlendFuncSeparate.xml
-func BlendFuncSeparate(sfactorRGB uint32, dfactorRGB uint32, sfactorAlpha uint32, dfactorAlpha uint32) {
+func BlendFuncSeparate(sfactorRGB int32, dfactorRGB int32, sfactorAlpha int32, dfactorAlpha int32) {
 	csfactorRGB, _ := (C.GLenum)(sfactorRGB), cgoAllocsUnknown
 	cdfactorRGB, _ := (C.GLenum)(dfactorRGB), cgoAllocsUnknown
 	csfactorAlpha, _ := (C.GLenum)(sfactorAlpha), cgoAllocsUnknown
@@ -102,7 +102,7 @@ func BlendFuncSeparate(sfactorRGB uint32, dfactorRGB uint32, sfactorAlpha uint32
 }
 
 // BufferData function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glBufferData.xml
-func BufferData(target uint32, size int, data unsafe.Pointer, usage uint32) {
+func BufferData(target int32, size int, data unsafe.Pointer, usage int32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	csize, _ := (C.GLsizeiptr)(size), cgoAllocsUnknown
 	cdata, _ := (unsafe.Pointer)(unsafe.Pointer(data)), cgoAllocsUnknown
@@ -111,7 +111,7 @@ func BufferData(target uint32, size int, data unsafe.Pointer, usage uint32) {
 }
 
 // BufferSubData function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glBufferSubData.xml
-func BufferSubData(target uint32, offset int, size int, data unsafe.Pointer) {
+func BufferSubData(target int32, offset int, size int, data unsafe.Pointer) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	coffset, _ := (C.GLintptr)(offset), cgoAllocsUnknown
 	csize, _ := (C.GLsizeiptr)(size), cgoAllocsUnknown
@@ -120,15 +120,15 @@ func BufferSubData(target uint32, offset int, size int, data unsafe.Pointer) {
 }
 
 // CheckFramebufferStatus function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glCheckFramebufferStatus.xml
-func CheckFramebufferStatus(target uint32) uint32 {
+func CheckFramebufferStatus(target int32) int32 {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	__ret := C.glCheckFramebufferStatus(ctarget)
-	__v := (uint32)(__ret)
+	__v := (int32)(__ret)
 	return __v
 }
 
 // Clear function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glClear.xml
-func Clear(mask uint32) {
+func Clear(mask int32) {
 	cmask, _ := (C.GLbitfield)(mask), cgoAllocsUnknown
 	C.glClear(cmask)
 }
@@ -164,13 +164,13 @@ func ColorMask(red byte, green byte, blue byte, alpha byte) {
 }
 
 // CompileShader function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glCompileShader.xml
-func CompileShader(shader uint32) {
+func CompileShader(shader int32) {
 	cshader, _ := (C.GLuint)(shader), cgoAllocsUnknown
 	C.glCompileShader(cshader)
 }
 
 // CompressedTexImage2D function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glCompressedTexImage2D.xml
-func CompressedTexImage2D(target uint32, level int32, internalformat uint32, width int32, height int32, border int32, imageSize int32, data unsafe.Pointer) {
+func CompressedTexImage2D(target int32, level int32, internalformat int32, width int32, height int32, border int32, imageSize int32, data unsafe.Pointer) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	clevel, _ := (C.GLint)(level), cgoAllocsUnknown
 	cinternalformat, _ := (C.GLenum)(internalformat), cgoAllocsUnknown
@@ -183,7 +183,7 @@ func CompressedTexImage2D(target uint32, level int32, internalformat uint32, wid
 }
 
 // CompressedTexSubImage2D function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glCompressedTexSubImage2D.xml
-func CompressedTexSubImage2D(target uint32, level int32, xoffset int32, yoffset int32, width int32, height int32, format uint32, imageSize int32, data unsafe.Pointer) {
+func CompressedTexSubImage2D(target int32, level int32, xoffset int32, yoffset int32, width int32, height int32, format int32, imageSize int32, data unsafe.Pointer) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	clevel, _ := (C.GLint)(level), cgoAllocsUnknown
 	cxoffset, _ := (C.GLint)(xoffset), cgoAllocsUnknown
@@ -197,7 +197,7 @@ func CompressedTexSubImage2D(target uint32, level int32, xoffset int32, yoffset 
 }
 
 // CopyTexImage2D function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glCopyTexImage2D.xml
-func CopyTexImage2D(target uint32, level int32, internalformat uint32, x int32, y int32, width int32, height int32, border int32) {
+func CopyTexImage2D(target int32, level int32, internalformat int32, x int32, y int32, width int32, height int32, border int32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	clevel, _ := (C.GLint)(level), cgoAllocsUnknown
 	cinternalformat, _ := (C.GLenum)(internalformat), cgoAllocsUnknown
@@ -210,7 +210,7 @@ func CopyTexImage2D(target uint32, level int32, internalformat uint32, x int32, 
 }
 
 // CopyTexSubImage2D function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glCopyTexSubImage2D.xml
-func CopyTexSubImage2D(target uint32, level int32, xoffset int32, yoffset int32, x int32, y int32, width int32, height int32) {
+func CopyTexSubImage2D(target int32, level int32, xoffset int32, yoffset int32, x int32, y int32, width int32, height int32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	clevel, _ := (C.GLint)(level), cgoAllocsUnknown
 	cxoffset, _ := (C.GLint)(xoffset), cgoAllocsUnknown
@@ -223,68 +223,68 @@ func CopyTexSubImage2D(target uint32, level int32, xoffset int32, yoffset int32,
 }
 
 // CreateProgram function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glCreateProgram.xml
-func CreateProgram() uint32 {
+func CreateProgram() int32 {
 	__ret := C.glCreateProgram()
-	__v := (uint32)(__ret)
+	__v := (int32)(__ret)
 	return __v
 }
 
 // CreateShader function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glCreateShader.xml
-func CreateShader(kind uint32) uint32 {
+func CreateShader(kind int32) int32 {
 	ckind, _ := (C.GLenum)(kind), cgoAllocsUnknown
 	__ret := C.glCreateShader(ckind)
-	__v := (uint32)(__ret)
+	__v := (int32)(__ret)
 	return __v
 }
 
 // CullFace function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glCullFace.xml
-func CullFace(mode uint32) {
+func CullFace(mode int32) {
 	cmode, _ := (C.GLenum)(mode), cgoAllocsUnknown
 	C.glCullFace(cmode)
 }
 
 // DeleteBuffers function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glDeleteBuffers.xml
-func DeleteBuffers(n int32, buffers []uint32) {
+func DeleteBuffers(n int32, buffers []int32) {
 	cn, _ := (C.GLsizei)(n), cgoAllocsUnknown
 	cbuffers, _ := (*C.GLuint)(unsafe.Pointer((*sliceHeader)(unsafe.Pointer(&buffers)).Data)), cgoAllocsUnknown
 	C.glDeleteBuffers(cn, cbuffers)
 }
 
 // DeleteFramebuffers function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glDeleteFramebuffers.xml
-func DeleteFramebuffers(n int32, framebuffers []uint32) {
+func DeleteFramebuffers(n int32, framebuffers []int32) {
 	cn, _ := (C.GLsizei)(n), cgoAllocsUnknown
 	cframebuffers, _ := (*C.GLuint)(unsafe.Pointer((*sliceHeader)(unsafe.Pointer(&framebuffers)).Data)), cgoAllocsUnknown
 	C.glDeleteFramebuffers(cn, cframebuffers)
 }
 
 // DeleteProgram function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glDeleteProgram.xml
-func DeleteProgram(program uint32) {
+func DeleteProgram(program int32) {
 	cprogram, _ := (C.GLuint)(program), cgoAllocsUnknown
 	C.glDeleteProgram(cprogram)
 }
 
 // DeleteRenderbuffers function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glDeleteRenderbuffers.xml
-func DeleteRenderbuffers(n int32, renderbuffers []uint32) {
+func DeleteRenderbuffers(n int32, renderbuffers []int32) {
 	cn, _ := (C.GLsizei)(n), cgoAllocsUnknown
 	crenderbuffers, _ := (*C.GLuint)(unsafe.Pointer((*sliceHeader)(unsafe.Pointer(&renderbuffers)).Data)), cgoAllocsUnknown
 	C.glDeleteRenderbuffers(cn, crenderbuffers)
 }
 
 // DeleteShader function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glDeleteShader.xml
-func DeleteShader(shader uint32) {
+func DeleteShader(shader int32) {
 	cshader, _ := (C.GLuint)(shader), cgoAllocsUnknown
 	C.glDeleteShader(cshader)
 }
 
 // DeleteTextures function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glDeleteTextures.xml
-func DeleteTextures(n int32, textures []uint32) {
+func DeleteTextures(n int32, textures []int32) {
 	cn, _ := (C.GLsizei)(n), cgoAllocsUnknown
 	ctextures, _ := (*C.GLuint)(unsafe.Pointer((*sliceHeader)(unsafe.Pointer(&textures)).Data)), cgoAllocsUnknown
 	C.glDeleteTextures(cn, ctextures)
 }
 
 // DepthFunc function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glDepthFunc.xml
-func DepthFunc(_func uint32) {
+func DepthFunc(_func int32) {
 	c_func, _ := (C.GLenum)(_func), cgoAllocsUnknown
 	C.glDepthFunc(c_func)
 }
@@ -303,26 +303,26 @@ func DepthRangef(n float32, f float32) {
 }
 
 // DetachShader function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glDetachShader.xml
-func DetachShader(program uint32, shader uint32) {
+func DetachShader(program int32, shader int32) {
 	cprogram, _ := (C.GLuint)(program), cgoAllocsUnknown
 	cshader, _ := (C.GLuint)(shader), cgoAllocsUnknown
 	C.glDetachShader(cprogram, cshader)
 }
 
 // Disable function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glDisable.xml
-func Disable(cap uint32) {
+func Disable(cap int32) {
 	ccap, _ := (C.GLenum)(cap), cgoAllocsUnknown
 	C.glDisable(ccap)
 }
 
 // DisableVertexAttribArray function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glDisableVertexAttribArray.xml
-func DisableVertexAttribArray(index uint32) {
+func DisableVertexAttribArray(index int32) {
 	cindex, _ := (C.GLuint)(index), cgoAllocsUnknown
 	C.glDisableVertexAttribArray(cindex)
 }
 
 // DrawArrays function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glDrawArrays.xml
-func DrawArrays(mode uint32, first int32, count int32) {
+func DrawArrays(mode int32, first int32, count int32) {
 	cmode, _ := (C.GLenum)(mode), cgoAllocsUnknown
 	cfirst, _ := (C.GLint)(first), cgoAllocsUnknown
 	ccount, _ := (C.GLsizei)(count), cgoAllocsUnknown
@@ -330,7 +330,7 @@ func DrawArrays(mode uint32, first int32, count int32) {
 }
 
 // DrawElements function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glDrawElements.xml
-func DrawElements(mode uint32, count int32, kind uint32, indices unsafe.Pointer) {
+func DrawElements(mode int32, count int32, kind int32, indices unsafe.Pointer) {
 	cmode, _ := (C.GLenum)(mode), cgoAllocsUnknown
 	ccount, _ := (C.GLsizei)(count), cgoAllocsUnknown
 	ckind, _ := (C.GLenum)(kind), cgoAllocsUnknown
@@ -339,13 +339,13 @@ func DrawElements(mode uint32, count int32, kind uint32, indices unsafe.Pointer)
 }
 
 // Enable function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glEnable.xml
-func Enable(cap uint32) {
+func Enable(cap int32) {
 	ccap, _ := (C.GLenum)(cap), cgoAllocsUnknown
 	C.glEnable(ccap)
 }
 
 // EnableVertexAttribArray function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glEnableVertexAttribArray.xml
-func EnableVertexAttribArray(index uint32) {
+func EnableVertexAttribArray(index int32) {
 	cindex, _ := (C.GLuint)(index), cgoAllocsUnknown
 	C.glEnableVertexAttribArray(cindex)
 }
@@ -361,7 +361,7 @@ func Flush() {
 }
 
 // FramebufferRenderbuffer function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glFramebufferRenderbuffer.xml
-func FramebufferRenderbuffer(target uint32, attachment uint32, renderbuffertarget uint32, renderbuffer uint32) {
+func FramebufferRenderbuffer(target int32, attachment int32, renderbuffertarget int32, renderbuffer int32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	cattachment, _ := (C.GLenum)(attachment), cgoAllocsUnknown
 	crenderbuffertarget, _ := (C.GLenum)(renderbuffertarget), cgoAllocsUnknown
@@ -370,7 +370,7 @@ func FramebufferRenderbuffer(target uint32, attachment uint32, renderbuffertarge
 }
 
 // FramebufferTexture2D function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glFramebufferTexture2D.xml
-func FramebufferTexture2D(target uint32, attachment uint32, textarget uint32, texture uint32, level int32) {
+func FramebufferTexture2D(target int32, attachment int32, textarget int32, texture int32, level int32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	cattachment, _ := (C.GLenum)(attachment), cgoAllocsUnknown
 	ctextarget, _ := (C.GLenum)(textarget), cgoAllocsUnknown
@@ -380,47 +380,47 @@ func FramebufferTexture2D(target uint32, attachment uint32, textarget uint32, te
 }
 
 // FrontFace function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glFrontFace.xml
-func FrontFace(mode uint32) {
+func FrontFace(mode int32) {
 	cmode, _ := (C.GLenum)(mode), cgoAllocsUnknown
 	C.glFrontFace(cmode)
 }
 
 // GenBuffers function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGenBuffers.xml
-func GenBuffers(n int32, buffers []uint32) {
+func GenBuffers(n int32, buffers []int32) {
 	cn, _ := (C.GLsizei)(n), cgoAllocsUnknown
 	cbuffers, _ := (*C.GLuint)(unsafe.Pointer((*sliceHeader)(unsafe.Pointer(&buffers)).Data)), cgoAllocsUnknown
 	C.glGenBuffers(cn, cbuffers)
 }
 
 // GenerateMipmap function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGenerateMipmap.xml
-func GenerateMipmap(target uint32) {
+func GenerateMipmap(target int32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	C.glGenerateMipmap(ctarget)
 }
 
 // GenFramebuffers function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGenFramebuffers.xml
-func GenFramebuffers(n int32, framebuffers []uint32) {
+func GenFramebuffers(n int32, framebuffers []int32) {
 	cn, _ := (C.GLsizei)(n), cgoAllocsUnknown
 	cframebuffers, _ := (*C.GLuint)(unsafe.Pointer((*sliceHeader)(unsafe.Pointer(&framebuffers)).Data)), cgoAllocsUnknown
 	C.glGenFramebuffers(cn, cframebuffers)
 }
 
 // GenRenderbuffers function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGenRenderbuffers.xml
-func GenRenderbuffers(n int32, renderbuffers []uint32) {
+func GenRenderbuffers(n int32, renderbuffers []int32) {
 	cn, _ := (C.GLsizei)(n), cgoAllocsUnknown
 	crenderbuffers, _ := (*C.GLuint)(unsafe.Pointer((*sliceHeader)(unsafe.Pointer(&renderbuffers)).Data)), cgoAllocsUnknown
 	C.glGenRenderbuffers(cn, crenderbuffers)
 }
 
 // GenTextures function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGenTextures.xml
-func GenTextures(n int32, textures []uint32) {
+func GenTextures(n int32, textures []int32) {
 	cn, _ := (C.GLsizei)(n), cgoAllocsUnknown
 	ctextures, _ := (*C.GLuint)(unsafe.Pointer((*sliceHeader)(unsafe.Pointer(&textures)).Data)), cgoAllocsUnknown
 	C.glGenTextures(cn, ctextures)
 }
 
 // GetActiveAttrib function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetActiveAttrib.xml
-func GetActiveAttrib(program uint32, index uint32, bufSize int32, length *int32, size *int32, kind *uint32, name []byte) {
+func GetActiveAttrib(program int32, index int32, bufSize int32, length *int32, size *int32, kind *int32, name []byte) {
 	cprogram, _ := (C.GLuint)(program), cgoAllocsUnknown
 	cindex, _ := (C.GLuint)(index), cgoAllocsUnknown
 	cbufSize, _ := (C.GLsizei)(bufSize), cgoAllocsUnknown
@@ -432,7 +432,7 @@ func GetActiveAttrib(program uint32, index uint32, bufSize int32, length *int32,
 }
 
 // GetActiveUniform function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetActiveUniform.xml
-func GetActiveUniform(program uint32, index uint32, bufSize int32, length *int32, size *int32, kind *uint32, name []byte) {
+func GetActiveUniform(program int32, index int32, bufSize int32, length *int32, size *int32, kind *int32, name []byte) {
 	cprogram, _ := (C.GLuint)(program), cgoAllocsUnknown
 	cindex, _ := (C.GLuint)(index), cgoAllocsUnknown
 	cbufSize, _ := (C.GLsizei)(bufSize), cgoAllocsUnknown
@@ -444,7 +444,7 @@ func GetActiveUniform(program uint32, index uint32, bufSize int32, length *int32
 }
 
 // GetAttachedShaders function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetAttachedShaders.xml
-func GetAttachedShaders(program uint32, maxCount int32, count *int32, shaders []uint32) {
+func GetAttachedShaders(program int32, maxCount int32, count *int32, shaders []int32) {
 	cprogram, _ := (C.GLuint)(program), cgoAllocsUnknown
 	cmaxCount, _ := (C.GLsizei)(maxCount), cgoAllocsUnknown
 	ccount, _ := (*C.GLsizei)(unsafe.Pointer(count)), cgoAllocsUnknown
@@ -453,7 +453,7 @@ func GetAttachedShaders(program uint32, maxCount int32, count *int32, shaders []
 }
 
 // GetAttribLocation function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetAttribLocation.xml
-func GetAttribLocation(program uint32, name string) int32 {
+func GetAttribLocation(program int32, name string) int32 {
 	cprogram, _ := (C.GLuint)(program), cgoAllocsUnknown
 	cname, _ := unpackPCharString(name)
 	__ret := C.glGetAttribLocation(cprogram, cname)
@@ -462,14 +462,14 @@ func GetAttribLocation(program uint32, name string) int32 {
 }
 
 // GetBooleanv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetBooleanv.xml
-func GetBooleanv(pname uint32, data []byte) {
+func GetBooleanv(pname int32, data []byte) {
 	cpname, _ := (C.GLenum)(pname), cgoAllocsUnknown
 	cdata, _ := (*C.GLboolean)(unsafe.Pointer((*sliceHeader)(unsafe.Pointer(&data)).Data)), cgoAllocsUnknown
 	C.glGetBooleanv(cpname, cdata)
 }
 
 // GetBufferParameteriv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetBufferParameteriv.xml
-func GetBufferParameteriv(target uint32, pname uint32, params *int32) {
+func GetBufferParameteriv(target int32, pname int32, params *int32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	cpname, _ := (C.GLenum)(pname), cgoAllocsUnknown
 	cparams, _ := (*C.GLint)(unsafe.Pointer(params)), cgoAllocsUnknown
@@ -477,21 +477,21 @@ func GetBufferParameteriv(target uint32, pname uint32, params *int32) {
 }
 
 // GetError function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetError.xml
-func GetError() uint32 {
+func GetError() int32 {
 	__ret := C.glGetError()
-	__v := (uint32)(__ret)
+	__v := (int32)(__ret)
 	return __v
 }
 
 // GetFloatv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetFloatv.xml
-func GetFloatv(pname uint32, data []float32) {
+func GetFloatv(pname int32, data []float32) {
 	cpname, _ := (C.GLenum)(pname), cgoAllocsUnknown
 	cdata, _ := (*C.GLfloat)(unsafe.Pointer((*sliceHeader)(unsafe.Pointer(&data)).Data)), cgoAllocsUnknown
 	C.glGetFloatv(cpname, cdata)
 }
 
 // GetFramebufferAttachmentParameteriv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetFramebufferAttachmentParameteriv.xml
-func GetFramebufferAttachmentParameteriv(target uint32, attachment uint32, pname uint32, params []int32) {
+func GetFramebufferAttachmentParameteriv(target int32, attachment int32, pname int32, params []int32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	cattachment, _ := (C.GLenum)(attachment), cgoAllocsUnknown
 	cpname, _ := (C.GLenum)(pname), cgoAllocsUnknown
@@ -500,14 +500,14 @@ func GetFramebufferAttachmentParameteriv(target uint32, attachment uint32, pname
 }
 
 // GetIntegerv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetIntegerv.xml
-func GetIntegerv(pname uint32, data []int32) {
+func GetIntegerv(pname int32, data []int32) {
 	cpname, _ := (C.GLenum)(pname), cgoAllocsUnknown
 	cdata, _ := (*C.GLint)(unsafe.Pointer((*sliceHeader)(unsafe.Pointer(&data)).Data)), cgoAllocsUnknown
 	C.glGetIntegerv(cpname, cdata)
 }
 
 // GetProgramiv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetProgramiv.xml
-func GetProgramiv(program uint32, pname uint32, params *int32) {
+func GetProgramiv(program int32, pname int32, params *int32) {
 	cprogram, _ := (C.GLuint)(program), cgoAllocsUnknown
 	cpname, _ := (C.GLenum)(pname), cgoAllocsUnknown
 	cparams, _ := (*C.GLint)(unsafe.Pointer(params)), cgoAllocsUnknown
@@ -515,7 +515,7 @@ func GetProgramiv(program uint32, pname uint32, params *int32) {
 }
 
 // GetProgramInfoLog function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetProgramInfoLog.xml
-func GetProgramInfoLog(program uint32, bufSize int32, length *int32, infoLog []byte) {
+func GetProgramInfoLog(program int32, bufSize int32, length *int32, infoLog []byte) {
 	cprogram, _ := (C.GLuint)(program), cgoAllocsUnknown
 	cbufSize, _ := (C.GLsizei)(bufSize), cgoAllocsUnknown
 	clength, _ := (*C.GLsizei)(unsafe.Pointer(length)), cgoAllocsUnknown
@@ -524,7 +524,7 @@ func GetProgramInfoLog(program uint32, bufSize int32, length *int32, infoLog []b
 }
 
 // GetRenderbufferParameteriv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetRenderbufferParameteriv.xml
-func GetRenderbufferParameteriv(target uint32, pname uint32, params *int32) {
+func GetRenderbufferParameteriv(target int32, pname int32, params *int32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	cpname, _ := (C.GLenum)(pname), cgoAllocsUnknown
 	cparams, _ := (*C.GLint)(unsafe.Pointer(params)), cgoAllocsUnknown
@@ -532,7 +532,7 @@ func GetRenderbufferParameteriv(target uint32, pname uint32, params *int32) {
 }
 
 // GetShaderiv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetShaderiv.xml
-func GetShaderiv(shader uint32, pname uint32, params *int32) {
+func GetShaderiv(shader int32, pname int32, params *int32) {
 	cshader, _ := (C.GLuint)(shader), cgoAllocsUnknown
 	cpname, _ := (C.GLenum)(pname), cgoAllocsUnknown
 	cparams, _ := (*C.GLint)(unsafe.Pointer(params)), cgoAllocsUnknown
@@ -540,7 +540,7 @@ func GetShaderiv(shader uint32, pname uint32, params *int32) {
 }
 
 // GetShaderInfoLog function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetShaderInfoLog.xml
-func GetShaderInfoLog(shader uint32, bufSize int32, length *int32, infoLog []byte) {
+func GetShaderInfoLog(shader int32, bufSize int32, length *int32, infoLog []byte) {
 	cshader, _ := (C.GLuint)(shader), cgoAllocsUnknown
 	cbufSize, _ := (C.GLsizei)(bufSize), cgoAllocsUnknown
 	clength, _ := (*C.GLsizei)(unsafe.Pointer(length)), cgoAllocsUnknown
@@ -549,7 +549,7 @@ func GetShaderInfoLog(shader uint32, bufSize int32, length *int32, infoLog []byt
 }
 
 // GetShaderPrecisionFormat function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetShaderPrecisionFormat.xml
-func GetShaderPrecisionFormat(shadertype uint32, precisiontype uint32, _range []int32, precision *int32) {
+func GetShaderPrecisionFormat(shadertype int32, precisiontype int32, _range []int32, precision *int32) {
 	cshadertype, _ := (C.GLenum)(shadertype), cgoAllocsUnknown
 	cprecisiontype, _ := (C.GLenum)(precisiontype), cgoAllocsUnknown
 	c_range, _ := (*C.GLint)(unsafe.Pointer((*sliceHeader)(unsafe.Pointer(&_range)).Data)), cgoAllocsUnknown
@@ -558,7 +558,7 @@ func GetShaderPrecisionFormat(shadertype uint32, precisiontype uint32, _range []
 }
 
 // GetShaderSource function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetShaderSource.xml
-func GetShaderSource(shader uint32, bufSize int32, length *int32, source []byte) {
+func GetShaderSource(shader int32, bufSize int32, length *int32, source []byte) {
 	cshader, _ := (C.GLuint)(shader), cgoAllocsUnknown
 	cbufSize, _ := (C.GLsizei)(bufSize), cgoAllocsUnknown
 	clength, _ := (*C.GLsizei)(unsafe.Pointer(length)), cgoAllocsUnknown
@@ -567,7 +567,7 @@ func GetShaderSource(shader uint32, bufSize int32, length *int32, source []byte)
 }
 
 // GetString function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetString.xml
-func GetString(name uint32) string {
+func GetString(name int32) string {
 	cname, _ := (C.GLenum)(name), cgoAllocsUnknown
 	__ret := C.glGetString(cname)
 	__v := packPUbyteString(__ret)
@@ -575,7 +575,7 @@ func GetString(name uint32) string {
 }
 
 // GetTexParameterfv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetTexParameterfv.xml
-func GetTexParameterfv(target uint32, pname uint32, params *float32) {
+func GetTexParameterfv(target int32, pname int32, params *float32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	cpname, _ := (C.GLenum)(pname), cgoAllocsUnknown
 	cparams, _ := (*C.GLfloat)(unsafe.Pointer(params)), cgoAllocsUnknown
@@ -583,7 +583,7 @@ func GetTexParameterfv(target uint32, pname uint32, params *float32) {
 }
 
 // GetTexParameteriv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetTexParameteriv.xml
-func GetTexParameteriv(target uint32, pname uint32, params *int32) {
+func GetTexParameteriv(target int32, pname int32, params *int32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	cpname, _ := (C.GLenum)(pname), cgoAllocsUnknown
 	cparams, _ := (*C.GLint)(unsafe.Pointer(params)), cgoAllocsUnknown
@@ -591,7 +591,7 @@ func GetTexParameteriv(target uint32, pname uint32, params *int32) {
 }
 
 // GetUniformfv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetUniformfv.xml
-func GetUniformfv(program uint32, location int32, params *float32) {
+func GetUniformfv(program int32, location int32, params *float32) {
 	cprogram, _ := (C.GLuint)(program), cgoAllocsUnknown
 	clocation, _ := (C.GLint)(location), cgoAllocsUnknown
 	cparams, _ := (*C.GLfloat)(unsafe.Pointer(params)), cgoAllocsUnknown
@@ -599,7 +599,7 @@ func GetUniformfv(program uint32, location int32, params *float32) {
 }
 
 // GetUniformiv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetUniformiv.xml
-func GetUniformiv(program uint32, location int32, params *int32) {
+func GetUniformiv(program int32, location int32, params *int32) {
 	cprogram, _ := (C.GLuint)(program), cgoAllocsUnknown
 	clocation, _ := (C.GLint)(location), cgoAllocsUnknown
 	cparams, _ := (*C.GLint)(unsafe.Pointer(params)), cgoAllocsUnknown
@@ -607,7 +607,7 @@ func GetUniformiv(program uint32, location int32, params *int32) {
 }
 
 // GetUniformLocation function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetUniformLocation.xml
-func GetUniformLocation(program uint32, name string) int32 {
+func GetUniformLocation(program int32, name string) int32 {
 	cprogram, _ := (C.GLuint)(program), cgoAllocsUnknown
 	cname, _ := unpackPCharString(name)
 	__ret := C.glGetUniformLocation(cprogram, cname)
@@ -616,7 +616,7 @@ func GetUniformLocation(program uint32, name string) int32 {
 }
 
 // GetVertexAttribfv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetVertexAttribfv.xml
-func GetVertexAttribfv(index uint32, pname uint32, params *float32) {
+func GetVertexAttribfv(index int32, pname int32, params *float32) {
 	cindex, _ := (C.GLuint)(index), cgoAllocsUnknown
 	cpname, _ := (C.GLenum)(pname), cgoAllocsUnknown
 	cparams, _ := (*C.GLfloat)(unsafe.Pointer(params)), cgoAllocsUnknown
@@ -624,7 +624,7 @@ func GetVertexAttribfv(index uint32, pname uint32, params *float32) {
 }
 
 // GetVertexAttribiv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetVertexAttribiv.xml
-func GetVertexAttribiv(index uint32, pname uint32, params *int32) {
+func GetVertexAttribiv(index int32, pname int32, params *int32) {
 	cindex, _ := (C.GLuint)(index), cgoAllocsUnknown
 	cpname, _ := (C.GLenum)(pname), cgoAllocsUnknown
 	cparams, _ := (*C.GLint)(unsafe.Pointer(params)), cgoAllocsUnknown
@@ -632,7 +632,7 @@ func GetVertexAttribiv(index uint32, pname uint32, params *int32) {
 }
 
 // GetVertexAttribPointerv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetVertexAttribPointerv.xml
-func GetVertexAttribPointerv(index uint32, pname uint32, pointer *unsafe.Pointer) {
+func GetVertexAttribPointerv(index int32, pname int32, pointer *unsafe.Pointer) {
 	cindex, _ := (C.GLuint)(index), cgoAllocsUnknown
 	cpname, _ := (C.GLenum)(pname), cgoAllocsUnknown
 	cpointer, _ := (*unsafe.Pointer)(unsafe.Pointer(pointer)), cgoAllocsUnknown
@@ -640,14 +640,14 @@ func GetVertexAttribPointerv(index uint32, pname uint32, pointer *unsafe.Pointer
 }
 
 // Hint function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glHint.xml
-func Hint(target uint32, mode uint32) {
+func Hint(target int32, mode int32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	cmode, _ := (C.GLenum)(mode), cgoAllocsUnknown
 	C.glHint(ctarget, cmode)
 }
 
 // IsBuffer function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glIsBuffer.xml
-func IsBuffer(buffer uint32) byte {
+func IsBuffer(buffer int32) byte {
 	cbuffer, _ := (C.GLuint)(buffer), cgoAllocsUnknown
 	__ret := C.glIsBuffer(cbuffer)
 	__v := (byte)(__ret)
@@ -655,7 +655,7 @@ func IsBuffer(buffer uint32) byte {
 }
 
 // IsEnabled function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glIsEnabled.xml
-func IsEnabled(cap uint32) byte {
+func IsEnabled(cap int32) byte {
 	ccap, _ := (C.GLenum)(cap), cgoAllocsUnknown
 	__ret := C.glIsEnabled(ccap)
 	__v := (byte)(__ret)
@@ -663,7 +663,7 @@ func IsEnabled(cap uint32) byte {
 }
 
 // IsFramebuffer function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glIsFramebuffer.xml
-func IsFramebuffer(framebuffer uint32) byte {
+func IsFramebuffer(framebuffer int32) byte {
 	cframebuffer, _ := (C.GLuint)(framebuffer), cgoAllocsUnknown
 	__ret := C.glIsFramebuffer(cframebuffer)
 	__v := (byte)(__ret)
@@ -671,7 +671,7 @@ func IsFramebuffer(framebuffer uint32) byte {
 }
 
 // IsProgram function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glIsProgram.xml
-func IsProgram(program uint32) byte {
+func IsProgram(program int32) byte {
 	cprogram, _ := (C.GLuint)(program), cgoAllocsUnknown
 	__ret := C.glIsProgram(cprogram)
 	__v := (byte)(__ret)
@@ -679,7 +679,7 @@ func IsProgram(program uint32) byte {
 }
 
 // IsRenderbuffer function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glIsRenderbuffer.xml
-func IsRenderbuffer(renderbuffer uint32) byte {
+func IsRenderbuffer(renderbuffer int32) byte {
 	crenderbuffer, _ := (C.GLuint)(renderbuffer), cgoAllocsUnknown
 	__ret := C.glIsRenderbuffer(crenderbuffer)
 	__v := (byte)(__ret)
@@ -687,7 +687,7 @@ func IsRenderbuffer(renderbuffer uint32) byte {
 }
 
 // IsShader function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glIsShader.xml
-func IsShader(shader uint32) byte {
+func IsShader(shader int32) byte {
 	cshader, _ := (C.GLuint)(shader), cgoAllocsUnknown
 	__ret := C.glIsShader(cshader)
 	__v := (byte)(__ret)
@@ -695,7 +695,7 @@ func IsShader(shader uint32) byte {
 }
 
 // IsTexture function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glIsTexture.xml
-func IsTexture(texture uint32) byte {
+func IsTexture(texture int32) byte {
 	ctexture, _ := (C.GLuint)(texture), cgoAllocsUnknown
 	__ret := C.glIsTexture(ctexture)
 	__v := (byte)(__ret)
@@ -709,13 +709,13 @@ func LineWidth(width float32) {
 }
 
 // LinkProgram function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glLinkProgram.xml
-func LinkProgram(program uint32) {
+func LinkProgram(program int32) {
 	cprogram, _ := (C.GLuint)(program), cgoAllocsUnknown
 	C.glLinkProgram(cprogram)
 }
 
 // PixelStorei function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glPixelStorei.xml
-func PixelStorei(pname uint32, param int32) {
+func PixelStorei(pname int32, param int32) {
 	cpname, _ := (C.GLenum)(pname), cgoAllocsUnknown
 	cparam, _ := (C.GLint)(param), cgoAllocsUnknown
 	C.glPixelStorei(cpname, cparam)
@@ -729,7 +729,7 @@ func PolygonOffset(factor float32, units float32) {
 }
 
 // ReadPixels function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glReadPixels.xml
-func ReadPixels(x int32, y int32, width int32, height int32, format uint32, kind uint32, pixels unsafe.Pointer) {
+func ReadPixels(x int32, y int32, width int32, height int32, format int32, kind int32, pixels unsafe.Pointer) {
 	cx, _ := (C.GLint)(x), cgoAllocsUnknown
 	cy, _ := (C.GLint)(y), cgoAllocsUnknown
 	cwidth, _ := (C.GLsizei)(width), cgoAllocsUnknown
@@ -746,7 +746,7 @@ func ReleaseShaderCompiler() {
 }
 
 // RenderbufferStorage function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glRenderbufferStorage.xml
-func RenderbufferStorage(target uint32, internalformat uint32, width int32, height int32) {
+func RenderbufferStorage(target int32, internalformat int32, width int32, height int32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	cinternalformat, _ := (C.GLenum)(internalformat), cgoAllocsUnknown
 	cwidth, _ := (C.GLsizei)(width), cgoAllocsUnknown
@@ -771,7 +771,7 @@ func Scissor(x int32, y int32, width int32, height int32) {
 }
 
 // ShaderBinary function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glShaderBinary.xml
-func ShaderBinary(count int32, shaders []uint32, binaryformat uint32, binary unsafe.Pointer, length int32) {
+func ShaderBinary(count int32, shaders []int32, binaryformat int32, binary unsafe.Pointer, length int32) {
 	ccount, _ := (C.GLsizei)(count), cgoAllocsUnknown
 	cshaders, _ := (*C.GLuint)(unsafe.Pointer((*sliceHeader)(unsafe.Pointer(&shaders)).Data)), cgoAllocsUnknown
 	cbinaryformat, _ := (C.GLenum)(binaryformat), cgoAllocsUnknown
@@ -781,7 +781,7 @@ func ShaderBinary(count int32, shaders []uint32, binaryformat uint32, binary uns
 }
 
 // ShaderSource function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glShaderSource.xml
-func ShaderSource(shader uint32, count int32, string []string, length []int32) {
+func ShaderSource(shader int32, count int32, string []string, length []int32) {
 	cshader, _ := (C.GLuint)(shader), cgoAllocsUnknown
 	ccount, _ := (C.GLsizei)(count), cgoAllocsUnknown
 	cstring, _ := unpackArgSString(string)
@@ -791,7 +791,7 @@ func ShaderSource(shader uint32, count int32, string []string, length []int32) {
 }
 
 // StencilFunc function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glStencilFunc.xml
-func StencilFunc(_func uint32, ref int32, mask uint32) {
+func StencilFunc(_func int32, ref int32, mask int32) {
 	c_func, _ := (C.GLenum)(_func), cgoAllocsUnknown
 	cref, _ := (C.GLint)(ref), cgoAllocsUnknown
 	cmask, _ := (C.GLuint)(mask), cgoAllocsUnknown
@@ -799,7 +799,7 @@ func StencilFunc(_func uint32, ref int32, mask uint32) {
 }
 
 // StencilFuncSeparate function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glStencilFuncSeparate.xml
-func StencilFuncSeparate(face uint32, _func uint32, ref int32, mask uint32) {
+func StencilFuncSeparate(face int32, _func int32, ref int32, mask int32) {
 	cface, _ := (C.GLenum)(face), cgoAllocsUnknown
 	c_func, _ := (C.GLenum)(_func), cgoAllocsUnknown
 	cref, _ := (C.GLint)(ref), cgoAllocsUnknown
@@ -808,20 +808,20 @@ func StencilFuncSeparate(face uint32, _func uint32, ref int32, mask uint32) {
 }
 
 // StencilMask function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glStencilMask.xml
-func StencilMask(mask uint32) {
+func StencilMask(mask int32) {
 	cmask, _ := (C.GLuint)(mask), cgoAllocsUnknown
 	C.glStencilMask(cmask)
 }
 
 // StencilMaskSeparate function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glStencilMaskSeparate.xml
-func StencilMaskSeparate(face uint32, mask uint32) {
+func StencilMaskSeparate(face int32, mask int32) {
 	cface, _ := (C.GLenum)(face), cgoAllocsUnknown
 	cmask, _ := (C.GLuint)(mask), cgoAllocsUnknown
 	C.glStencilMaskSeparate(cface, cmask)
 }
 
 // StencilOp function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glStencilOp.xml
-func StencilOp(fail uint32, zfail uint32, zpass uint32) {
+func StencilOp(fail int32, zfail int32, zpass int32) {
 	cfail, _ := (C.GLenum)(fail), cgoAllocsUnknown
 	czfail, _ := (C.GLenum)(zfail), cgoAllocsUnknown
 	czpass, _ := (C.GLenum)(zpass), cgoAllocsUnknown
@@ -829,7 +829,7 @@ func StencilOp(fail uint32, zfail uint32, zpass uint32) {
 }
 
 // StencilOpSeparate function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glStencilOpSeparate.xml
-func StencilOpSeparate(face uint32, sfail uint32, dpfail uint32, dppass uint32) {
+func StencilOpSeparate(face int32, sfail int32, dpfail int32, dppass int32) {
 	cface, _ := (C.GLenum)(face), cgoAllocsUnknown
 	csfail, _ := (C.GLenum)(sfail), cgoAllocsUnknown
 	cdpfail, _ := (C.GLenum)(dpfail), cgoAllocsUnknown
@@ -838,7 +838,7 @@ func StencilOpSeparate(face uint32, sfail uint32, dpfail uint32, dppass uint32) 
 }
 
 // TexImage2D function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glTexImage2D.xml
-func TexImage2D(target uint32, level int32, internalformat int32, width int32, height int32, border int32, format uint32, kind uint32, pixels unsafe.Pointer) {
+func TexImage2D(target int32, level int32, internalformat int32, width int32, height int32, border int32, format int32, kind int32, pixels unsafe.Pointer) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	clevel, _ := (C.GLint)(level), cgoAllocsUnknown
 	cinternalformat, _ := (C.GLint)(internalformat), cgoAllocsUnknown
@@ -852,7 +852,7 @@ func TexImage2D(target uint32, level int32, internalformat int32, width int32, h
 }
 
 // TexParameterf function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glTexParameterf.xml
-func TexParameterf(target uint32, pname uint32, param float32) {
+func TexParameterf(target int32, pname int32, param float32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	cpname, _ := (C.GLenum)(pname), cgoAllocsUnknown
 	cparam, _ := (C.GLfloat)(param), cgoAllocsUnknown
@@ -860,7 +860,7 @@ func TexParameterf(target uint32, pname uint32, param float32) {
 }
 
 // TexParameterfv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glTexParameterfv.xml
-func TexParameterfv(target uint32, pname uint32, params *float32) {
+func TexParameterfv(target int32, pname int32, params *float32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	cpname, _ := (C.GLenum)(pname), cgoAllocsUnknown
 	cparams, _ := (*C.GLfloat)(unsafe.Pointer(params)), cgoAllocsUnknown
@@ -868,7 +868,7 @@ func TexParameterfv(target uint32, pname uint32, params *float32) {
 }
 
 // TexParameteri function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glTexParameteri.xml
-func TexParameteri(target uint32, pname uint32, param int32) {
+func TexParameteri(target int32, pname int32, param int32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	cpname, _ := (C.GLenum)(pname), cgoAllocsUnknown
 	cparam, _ := (C.GLint)(param), cgoAllocsUnknown
@@ -876,7 +876,7 @@ func TexParameteri(target uint32, pname uint32, param int32) {
 }
 
 // TexParameteriv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glTexParameteriv.xml
-func TexParameteriv(target uint32, pname uint32, params *int32) {
+func TexParameteriv(target int32, pname int32, params *int32) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	cpname, _ := (C.GLenum)(pname), cgoAllocsUnknown
 	cparams, _ := (*C.GLint)(unsafe.Pointer(params)), cgoAllocsUnknown
@@ -884,7 +884,7 @@ func TexParameteriv(target uint32, pname uint32, params *int32) {
 }
 
 // TexSubImage2D function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glTexSubImage2D.xml
-func TexSubImage2D(target uint32, level int32, xoffset int32, yoffset int32, width int32, height int32, format uint32, kind uint32, pixels unsafe.Pointer) {
+func TexSubImage2D(target int32, level int32, xoffset int32, yoffset int32, width int32, height int32, format int32, kind int32, pixels unsafe.Pointer) {
 	ctarget, _ := (C.GLenum)(target), cgoAllocsUnknown
 	clevel, _ := (C.GLint)(level), cgoAllocsUnknown
 	cxoffset, _ := (C.GLint)(xoffset), cgoAllocsUnknown
@@ -1057,33 +1057,33 @@ func UniformMatrix4fv(location int32, count int32, transpose byte, value *float3
 }
 
 // UseProgram function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glUseProgram.xml
-func UseProgram(program uint32) {
+func UseProgram(program int32) {
 	cprogram, _ := (C.GLuint)(program), cgoAllocsUnknown
 	C.glUseProgram(cprogram)
 }
 
 // ValidateProgram function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glValidateProgram.xml
-func ValidateProgram(program uint32) {
+func ValidateProgram(program int32) {
 	cprogram, _ := (C.GLuint)(program), cgoAllocsUnknown
 	C.glValidateProgram(cprogram)
 }
 
 // VertexAttrib1f function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glVertexAttrib1f.xml
-func VertexAttrib1f(index uint32, x float32) {
+func VertexAttrib1f(index int32, x float32) {
 	cindex, _ := (C.GLuint)(index), cgoAllocsUnknown
 	cx, _ := (C.GLfloat)(x), cgoAllocsUnknown
 	C.glVertexAttrib1f(cindex, cx)
 }
 
 // VertexAttrib1fv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glVertexAttrib1fv.xml
-func VertexAttrib1fv(index uint32, v []float32) {
+func VertexAttrib1fv(index int32, v []float32) {
 	cindex, _ := (C.GLuint)(index), cgoAllocsUnknown
 	cv, _ := (*C.GLfloat)(unsafe.Pointer((*sliceHeader)(unsafe.Pointer(&v)).Data)), cgoAllocsUnknown
 	C.glVertexAttrib1fv(cindex, cv)
 }
 
 // VertexAttrib2f function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glVertexAttrib2f.xml
-func VertexAttrib2f(index uint32, x float32, y float32) {
+func VertexAttrib2f(index int32, x float32, y float32) {
 	cindex, _ := (C.GLuint)(index), cgoAllocsUnknown
 	cx, _ := (C.GLfloat)(x), cgoAllocsUnknown
 	cy, _ := (C.GLfloat)(y), cgoAllocsUnknown
@@ -1091,14 +1091,14 @@ func VertexAttrib2f(index uint32, x float32, y float32) {
 }
 
 // VertexAttrib2fv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glVertexAttrib2fv.xml
-func VertexAttrib2fv(index uint32, v []float32) {
+func VertexAttrib2fv(index int32, v []float32) {
 	cindex, _ := (C.GLuint)(index), cgoAllocsUnknown
 	cv, _ := (*C.GLfloat)(unsafe.Pointer((*sliceHeader)(unsafe.Pointer(&v)).Data)), cgoAllocsUnknown
 	C.glVertexAttrib2fv(cindex, cv)
 }
 
 // VertexAttrib3f function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glVertexAttrib3f.xml
-func VertexAttrib3f(index uint32, x float32, y float32, z float32) {
+func VertexAttrib3f(index int32, x float32, y float32, z float32) {
 	cindex, _ := (C.GLuint)(index), cgoAllocsUnknown
 	cx, _ := (C.GLfloat)(x), cgoAllocsUnknown
 	cy, _ := (C.GLfloat)(y), cgoAllocsUnknown
@@ -1107,14 +1107,14 @@ func VertexAttrib3f(index uint32, x float32, y float32, z float32) {
 }
 
 // VertexAttrib3fv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glVertexAttrib3fv.xml
-func VertexAttrib3fv(index uint32, v []float32) {
+func VertexAttrib3fv(index int32, v []float32) {
 	cindex, _ := (C.GLuint)(index), cgoAllocsUnknown
 	cv, _ := (*C.GLfloat)(unsafe.Pointer((*sliceHeader)(unsafe.Pointer(&v)).Data)), cgoAllocsUnknown
 	C.glVertexAttrib3fv(cindex, cv)
 }
 
 // VertexAttrib4f function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glVertexAttrib4f.xml
-func VertexAttrib4f(index uint32, x float32, y float32, z float32, w float32) {
+func VertexAttrib4f(index int32, x float32, y float32, z float32, w float32) {
 	cindex, _ := (C.GLuint)(index), cgoAllocsUnknown
 	cx, _ := (C.GLfloat)(x), cgoAllocsUnknown
 	cy, _ := (C.GLfloat)(y), cgoAllocsUnknown
@@ -1124,14 +1124,14 @@ func VertexAttrib4f(index uint32, x float32, y float32, z float32, w float32) {
 }
 
 // VertexAttrib4fv function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glVertexAttrib4fv.xml
-func VertexAttrib4fv(index uint32, v []float32) {
+func VertexAttrib4fv(index int32, v []float32) {
 	cindex, _ := (C.GLuint)(index), cgoAllocsUnknown
 	cv, _ := (*C.GLfloat)(unsafe.Pointer((*sliceHeader)(unsafe.Pointer(&v)).Data)), cgoAllocsUnknown
 	C.glVertexAttrib4fv(cindex, cv)
 }
 
 // VertexAttribPointer function as declared in https://www.khronos.org/opengles/sdk/docs/man/xhtml/glVertexAttribPointer.xml
-func VertexAttribPointer(index uint32, size int32, kind uint32, normalized byte, stride int32, pointer unsafe.Pointer) {
+func VertexAttribPointer(index int32, size int32, kind int32, normalized byte, stride int32, pointer unsafe.Pointer) {
 	cindex, _ := (C.GLuint)(index), cgoAllocsUnknown
 	csize, _ := (C.GLint)(size), cgoAllocsUnknown
 	ckind, _ := (C.GLenum)(kind), cgoAllocsUnknown
