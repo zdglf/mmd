@@ -3,10 +3,10 @@ package model
 import (
     "github.com/zdglf/mmd/util"
     "github.com/zdglf/mmd/gles2"
+    "github.com/go-gl/mathgl/mgl32"
     "log"
 
     "strings"
-    "regexp"
     "fmt"
     "path"
     "unsafe"
@@ -14,7 +14,7 @@ import (
 
 type GLBuf struct {
     size int
-    buffer int
+    buffer int32
 }
 
 type AttrArrBuf struct {
@@ -28,17 +28,17 @@ type PMDModel struct {
     pmd *util.PMD
     programMap map[string]int32
 
-    cameraPosition []float32
+    cameraPosition mgl32.Vec3
     ignoreCameraMotion bool
-    rotx int
-    roty int
+    rotx float32
+    roty float32
     distance float32
-    center []float32
+    center mgl32.Vec3
     fovy float32
     drawEdge bool
     edgeThickness float32
     edgeColor []float32
-    lightDirection []float32
+    lightDirection mgl32.Vec3
     lightDistance float32
     lightColor []float32
     drawSelfShadow bool
@@ -48,16 +48,22 @@ type PMDModel struct {
     realFps float32
     playing bool
     frame int
-    upPos []float32
-    x int
-    y int
-    width int
-    height int
+    upPos mgl32.Vec3
+    x int32
+    y int32
+    width int32
+    height int32
 
     vbuffers map[string]GLBuf
     ibuffer int32
 
     textureManager *TextureManager
+
+    viewMatrix mgl32.Mat4
+    pMatrix mgl32.Mat4
+    modelMatrix mgl32.Mat4
+    mvMatrix mgl32.Mat4
+    nMatrix mgl32.Mat4
 
     
 }
@@ -129,62 +135,50 @@ func (m *PMDModel)InitShader(vShader string, fShader string) bool {
         return false
     }
     gles2.UseProgram(m.program)
-
-    attributes := ""
-    uniforms := ""
-
-    shaders := []string{vShader, fShader}
-    for _,shader := range shaders{
-        re := regexp.MustCompile("\\/\\*[\\s\\S]*?\\*\\/")
-        tmp := re.ReplaceAllString(shader, "")
-        re = regexp.MustCompile("\\/\\/[^\\n]*")
-        tmp = re.ReplaceAllString(tmp, "")
-        datas := strings.Split(tmp, ";")
-        for _,d := range datas{
-            re = regexp.MustCompile("(\\w+)(\\[\\d+\\])?\\s*$")
-            t := re.FindString(d)
-            if strings.Contains(d, "uniform"){
-                if !strings.Contains(uniforms, t) {
-                    uniforms = uniforms + ";" + t
-                }
-
-            }else if strings.Contains(d, "attribute"){
-                if !strings.Contains(attributes, t) {
-                    attributes = attributes + ";" + t
-                }
-
-            }
-
-        }
-
-    }
-    as := strings.Split(attributes, ";")
-    us := strings.Split(uniforms, ";")
     m.programMap = make(map[string]int32)
-    for _, a := range as{
-        m.programMap[a] = gles2.GetAttribLocation(m.program, a)
-        gles2.EnableVertexAttribArray(m.programMap[a])
+
+    var count int32
+    gles2.GetProgramiv(m.program, gles2.ACTIVE_ATTRIBUTES, &count)
+
+    for i:= 0;i <int(count);i++{
+        var bufSize int32 = 20
+        var realSize int32
+        var attr_type int32
+        var nameSize int32
+        buff := make([]byte, bufSize)
+        gles2.GetActiveAttrib(m.program, int32(i), bufSize, &nameSize, &realSize, &attr_type, buff)
+        name := string(buff[:nameSize])
+        m.programMap[name] = int32(i)
+        gles2.EnableVertexAttribArray(int32(i))
+        log.Println(i,name)
     }
-    for _, u := range us{
-        m.programMap[u] = gles2.GetUniformLocation(m.program, u)
+    gles2.GetProgramiv(m.program, gles2.ACTIVE_UNIFORMS, &count)
+    for i:= 0;i <int(count);i++{
+        var bufSize int32 = 20
+        var realSize int32
+        var attr_type int32
+        var nameSize int32
+        buff := make([]byte, bufSize)
+        gles2.GetActiveUniform(m.program, int32(i), bufSize, &nameSize, &realSize, &attr_type, buff)
+        name := string(buff[:nameSize])
+        m.programMap[name] = int32(i)
+        log.Println(i, name)
     }
-    log.Println(len(as), as)
-    log.Println(len(us), us)
 
     return true
 }
-func (m *PMDModel)InitParam(x int, y int, width int, height int, toonDir string){
-    m.cameraPosition = []float32{0.0, 0.0, -15.0}
+func (m *PMDModel)InitParam(x int32, y int32, width int32, height int32, toonDir string){
+    m.cameraPosition = mgl32.Vec3{0.0, 0.0, -15.0}
     m.ignoreCameraMotion = false
     m.rotx = 0
     m.roty = 0
     m.distance = 15.0
-    m.center =  []float32{0.0, 10.0, 0.0}
+    m.center =  mgl32.Vec3{0.0, 10.0, 0.0}
     m.fovy = 40
     m.drawEdge = false
     m.edgeThickness = 0.004
     m.edgeColor = []float32{0.0, 0.0, 0.0, 1.0}
-    m.lightDirection = []float32{1.0, -1.0, -1.0}
+    m.lightDirection = mgl32.Vec3{1.0, -1.0, -1.0}
     m.lightDistance = 100.
     m.lightColor = []float32{0.6, 0.6, 0.6, 1.0}
     m.drawSelfShadow = true
@@ -194,7 +188,7 @@ func (m *PMDModel)InitParam(x int, y int, width int, height int, toonDir string)
     m.realFps = m.fps
     m.playing = false
     m.frame =-1
-    m.upPos = []float32{0,1,0.0}
+    m.upPos = mgl32.Vec3{0,1,0.0}
     m.x = x
     m.y = y
     m.width = width
@@ -262,8 +256,8 @@ func (m *PMDModel)initVertices() {
             buffer := make([]int32, 1)
             gles2.GenBuffers(1, buffer)
             gles2.BindBuffer(gles2.ARRAY_BUFFER, buffer[0])
-            gles2.BufferData(gles2.ARRAY_BUFFER, tmp.size*len(tmp.array), unsafe.Pointer(&tmp.array[0]), gles2.STATIC_DRAW)
-            m.vbuffers[tmp.attribute] = GLBuf{tmp.size, int(buffer[0])}
+            gles2.BufferData(gles2.ARRAY_BUFFER, 4*len(tmp.array), unsafe.Pointer(&tmp.array[0]), gles2.STATIC_DRAW)
+            m.vbuffers[tmp.attribute] = GLBuf{tmp.size, buffer[0]}
         }
         gles2.BindBuffer(gles2.ARRAY_BUFFER, 0)
 
@@ -354,5 +348,145 @@ func (m *PMDModel)getFrameCount() int{
 func (m *PMDModel)InitFrame(index int){
 
 }
+
+func (m *PMDModel)computeMatrices(){
+    m.cameraPosition = mgl32.Vec3{0.0, 0.0,-m.distance}
+    m.upPos = mgl32.Vec3{0, 1,0.0}
+    m.viewMatrix = mgl32.LookAtV(m.cameraPosition, m.center, m.upPos)
+    gles2.Enable(gles2.CULL_FACE)
+    gles2.Enable(gles2.DEPTH_TEST)
+    gles2.Viewport(m.x,m.y,m.width,m.height)
+
+    ratio := float32(m.width) / float32(m.height)
+    left := -ratio
+    right := ratio
+    var bottom float32 = -1.0
+    var top float32 = 1.0
+    var near float32 = 1.0
+    var far float32 = 60.0
+
+    m.pMatrix = mgl32.Frustum(left, right, bottom, top, near, far)
+
+}
+
 func (m *PMDModel)Render(){
+    m.computeMatrices()
+    gles2.ClearColor(0.5, 0.5, 0.5, 1)
+    gles2.ClearDepthf(1)
+    gles2.Enable(gles2.DEPTH_TEST)
+
+    gles2.BindFramebuffer(gles2.FRAMEBUFFER, 0);
+    gles2.Viewport(m.x, m.y, m.width, m.height);
+    gles2.Clear(gles2.COLOR_BUFFER_BIT | gles2.DEPTH_BUFFER_BIT);
+    for attr, vb := range m.vbuffers{
+        gles2.BindBuffer(gles2.ARRAY_BUFFER, vb.buffer)
+        gles2.VertexAttribPointer(m.programMap[attr], int32(vb.size), gles2.FLOAT, byte(0), 0, nil)
+    }
+    gles2.BindBuffer(gles2.ELEMENT_ARRAY_BUFFER, m.ibuffer)
+    m.setSelfShadowTexture()
+    m.setUniforms()
+    gles2.Enable(gles2.CULL_FACE)
+    gles2.Enable(gles2.BLEND)
+    gles2.BlendFuncSeparate(gles2.SRC_ALPHA, gles2.ONE_MINUS_SRC_ALPHA, gles2.SRC_ALPHA, gles2.DST_ALPHA)
+    offset := 0
+    materials := m.pmd.Materials
+    for _,material := range materials{
+        m.renderMaterial(material, offset)
+        offset += material.FaceVertCount
+    }
+    gles2.Disable(gles2.BLEND)
+    offset = 0
+    for _,material := range materials{
+        m.renderEdge(material, offset)
+        offset += material.FaceVertCount
+    }
+
+    gles2.Disable(gles2.CULL_FACE);
+    gles2.Flush();
+}
+
+func (m *PMDModel)setSelfShadowTexture()  {
+    
+}
+func (m *PMDModel)setUniforms()  {
+    m.modelMatrix = mgl32.Ident4()
+    m.mvMatrix = m.viewMatrix.Mul4(m.modelMatrix)
+    m.nMatrix = m.mvMatrix.Inv()
+    m.nMatrix = m.nMatrix.Transpose()
+
+    gles2.Uniform1f(m.programMap["uEdgeThickness"], m.edgeThickness)
+    gles2.Uniform3fv(m.programMap["uEdgeColor"], 1, &m.edgeColor[0])
+    gles2.UniformMatrix4fv(m.programMap["uMVMatrix"], 1, byte(0), &m.mvMatrix[0])
+    gles2.UniformMatrix4fv(m.programMap["uPMatrix"], 1, byte(0), &m.pMatrix[0])
+    gles2.UniformMatrix4fv(m.programMap["uNMatrix"], 1, byte(0), &m.nMatrix[0])
+
+    ld := m.lightDirection.Normalize()
+    ld4 := m.nMatrix.Mul4x1(ld.Vec4(0))
+    ld = ld4.Vec3()
+    gles2.Uniform3fv(m.programMap["uLightDirection"], 1, &ld[0])
+    gles2.Uniform3fv(m.programMap["uLightColor"], 1, &m.lightColor[0])
+
+    gles2.Uniform1i(m.programMap["uSelfShadow"], 0)
+
+    gles2.Uniform1i(m.programMap["uGenerateShadowMap"], 0)
+    gles2.Uniform1i(m.programMap["uAxis"], 0)
+    gles2.Uniform1i(m.programMap["uCenterPoint"], 0)
+    
+
+}
+
+func (m *PMDModel)renderMaterial(material *util.PMDMaterial, offset int)  {
+    gles2.Uniform3fv(m.programMap["uAmbientColor"],1, &material.Ambient[0])
+    gles2.Uniform3fv(m.programMap["uSpecularColor"],1, &material.Specular[0])
+    gles2.Uniform3fv(m.programMap["uDiffuseColor"], 1, &material.Diffuse[0])
+    gles2.Uniform1f(m.programMap["uAlpha"], material.Alpha)
+    gles2.Uniform1f(m.programMap["uShininess"], material.Shininess)
+    gles2.Uniform1i(m.programMap["uEdge"], 0)
+    textures := material.Textures
+    gles2.ActiveTexture(gles2.TEXTURE0)
+    gles2.BindTexture(gles2.TEXTURE_2D, textures["toon"])
+    gles2.Uniform1i(m.programMap["uToon"], 0)
+    if _,ok := textures["regular"];ok{
+        gles2.ActiveTexture(gles2.TEXTURE1)
+        gles2.BindTexture(gles2.TEXTURE_2D, textures["regular"])
+        gles2.Uniform1i(m.programMap["uTexture"], 1)
+    }
+    if _, ok := textures["regular"];ok{
+        gles2.Uniform1i(m.programMap["uUseTexture"], 1)
+    }else{
+        gles2.Uniform1i(m.programMap["uUseTexture"], 0)
+    }
+
+    _, sph_ok := textures["sph"]
+    _, spa_ok := textures["spa"]
+    if sph_ok||spa_ok {
+        gles2.ActiveTexture(gles2.TEXTURE2)
+        if sph_ok{
+            gles2.BindTexture(gles2.TEXTURE_2D, textures["sph"])
+            gles2.Uniform1i(m.programMap["uIsSphereMapAdditive"], 0)
+        }else{
+            gles2.BindTexture(gles2.TEXTURE_2D, textures["spa"])
+            gles2.Uniform1i(m.programMap["uIsSphereMapAdditive"], 1)
+        }
+
+        gles2.Uniform1i(m.programMap["uSphereMap"], 2)
+        gles2.Uniform1i(m.programMap["uUseSphereMap"], 1)
+    } else {
+        gles2.Uniform1i(m.programMap["uUseSphereMap"], 0)
+    }
+    gles2.CullFace(gles2.FRONT)
+    index := offset * 4
+    gles2.DrawElements(gles2.TRIANGLES, int32(material.FaceVertCount), gles2.UNSIGNED_INT, unsafe.Pointer(&index))
+}
+
+func (m *PMDModel)renderEdge(material *util.PMDMaterial, offset int)  {
+    if (!m.drawEdge || material.EdgeFlag==0) {
+        return
+    }
+    index := offset * 4
+    gles2.Uniform1i(m.programMap["uEdge"], 1)
+    gles2.CullFace(gles2.BACK)
+    gles2.DrawElements(gles2.TRIANGLES, int32(material.FaceVertCount), gles2.UNSIGNED_INT, unsafe.Pointer(&index))
+    gles2.CullFace(gles2.FRONT);
+    gles2.Uniform1i(m.programMap["uEdge"], 0)
 }
