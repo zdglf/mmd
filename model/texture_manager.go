@@ -13,6 +13,7 @@ import (
     "os"
     "image/draw"
     "unsafe"
+    "log"
 )
 
 type TextureManager struct {
@@ -28,6 +29,7 @@ func (tm *TextureManager)Get(t string, url string)(texture int32, err error){
     if texture, ok = tm.stores[url];ok{
         return
     }
+    log.Println("texture manager", url)
     textures := make([]int32, 1)
     gles2.GenTextures(1, textures)
     texture = textures[0]

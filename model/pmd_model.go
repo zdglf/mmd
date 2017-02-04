@@ -195,7 +195,9 @@ func (m *PMDModel)InitParam(x int32, y int32, width int32, height int32, toonDir
     m.height = height
     m.initVertices()
     m.initIndices()
-    m.initTextures(toonDir)
+    if err := m.initTextures(toonDir);err!=nil{
+        log.Println(err)
+    }
 }
 
 func (m *PMDModel)initVertices() {
@@ -272,6 +274,7 @@ func (m *PMDModel)initIndices() {
     gles2.BindBuffer(gles2.ELEMENT_ARRAY_BUFFER, buffer[0])
     gles2.BufferData(gles2.ELEMENT_ARRAY_BUFFER, 4*len(indices), unsafe.Pointer(&indices[0]), gles2.STATIC_DRAW)
     m.ibuffer = buffer[0]
+    log.Println("index count:", len(indices),"buf:",m.ibuffer)
 
 }
 
@@ -309,7 +312,6 @@ func (m *PMDModel)initTextures(toonDir string)(err error) {
         if material.TextureFileName != ""{
             textureFiles := strings.Split(material.TextureFileName, "*")
             for _,textureFile := range textureFiles{
-                log.Println(textureFile)
                 size := len(textureFile)
                 if(size < 4){
                     continue
@@ -369,15 +371,120 @@ func (m *PMDModel)computeMatrices(){
 
 }
 
+func (m *PMDModel)DebugInitParam(x int32, y int32, width int32, height int32){
+    m.vbuffers = make(map[string]GLBuf)
+    if m.pmd != nil{
+        length := len(m.pmd.Vertices)
+
+        positions := make([]float32, 4*length)
+        normals := make([]float32, 3*length)
+        colors := make([]float32, 4*length)
+
+        for i:= 0; i< length; i++ {
+            vertex := m.pmd.Vertices[i]
+            normals[3 * i] = vertex.NX
+            normals[3 * i + 1] = vertex.NY
+            normals[3 * i + 2] = vertex.NZ
+            positions[3 * i] = vertex.X
+            positions[3 * i + 1] = vertex.Y
+            positions[3 * i + 2] = vertex.Z
+            colors[4 * i] = 1.
+            colors[4 * i + 1] = 1.
+            colors[4 * i + 2] = 1.
+            colors[4 * i + 3] = 1.
+        }
+        tmpArr := make([]AttrArrBuf, 0)
+        tmpArr = append(tmpArr, AttrArrBuf{4, colors, "a_Color"})
+        tmpArr = append(tmpArr, AttrArrBuf{3, positions, "a_Position"})
+        tmpArr = append(tmpArr, AttrArrBuf{3, normals, "a_Normal"})
+        for _, tmp := range tmpArr{
+            buffer := make([]int32, 1)
+            gles2.GenBuffers(1, buffer)
+            gles2.BindBuffer(gles2.ARRAY_BUFFER, buffer[0])
+            gles2.BufferData(gles2.ARRAY_BUFFER, 4*len(tmp.array), unsafe.Pointer(&tmp.array[0]), gles2.STATIC_DRAW)
+            m.vbuffers[tmp.attribute] = GLBuf{tmp.size, buffer[0]}
+        }
+        gles2.BindBuffer(gles2.ARRAY_BUFFER, 0)
+
+        indices := m.pmd.Triangles
+        buffer := make([]int32, 1)
+        gles2.GenBuffers(1, buffer)
+        gles2.BindBuffer(gles2.ELEMENT_ARRAY_BUFFER, buffer[0])
+        gles2.BufferData(gles2.ELEMENT_ARRAY_BUFFER, 4*len(indices), unsafe.Pointer(&indices[0]), gles2.STATIC_DRAW)
+        m.ibuffer = buffer[0]
+        log.Println("index count:", len(indices),"buf:",m.ibuffer)
+        m.x = x
+        m.y = y
+        m.width = width
+        m.height = height
+
+    }
+}
+
+func (m *PMDModel)DebugRender(){
+    gles2.ClearColor(0.5, 0.5, 0.5, 0.5)
+    gles2.ClearDepthf(1)
+    gles2.Enable(gles2.DEPTH_TEST)
+    gles2.Enable(gles2.CULL_FACE)
+    gles2.BindFramebuffer(gles2.FRAMEBUFFER, 0)
+    gles2.Clear(gles2.COLOR_BUFFER_BIT | gles2.DEPTH_BUFFER_BIT)
+    m.distance = 15.0
+    m.cameraPosition = mgl32.Vec3{0.0, 0.0,-m.distance}
+    m.center =  mgl32.Vec3{0.0, 10.0, 0.0}
+    m.upPos = mgl32.Vec3{0, 1,0.0}
+    m.viewMatrix = mgl32.LookAtV(m.cameraPosition, m.center, m.upPos)
+    log.Println("viewMatrix", m.viewMatrix)
+    gles2.Viewport(m.x,m.y,m.width,m.height)
+
+    ratio := float32(m.width) / float32(m.height)
+    left := -ratio
+    right := ratio
+    var bottom float32 = -1.0
+    var top float32 = 1.0
+    var near float32 = 1.0
+    var far float32 = 60.0
+
+    m.pMatrix = mgl32.Frustum(left, right, bottom, top, near, far)
+    log.Println("pMatrix", m.pMatrix)
+    m.modelMatrix = mgl32.Ident4()
+    log.Println("modelMatrix", m.modelMatrix)
+    m.mvMatrix = m.viewMatrix.Mul4(m.modelMatrix)
+
+    mvpMatrix := m.pMatrix.Mul4(m.mvMatrix)
+
+    lightPosition := mgl32.Vec3{50,50,50}
+
+    gles2.Uniform3fv(m.programMap["u_LightPos"], 1, &lightPosition[0])
+    log.Println("u_LightPos", lightPosition)
+    gles2.UniformMatrix4fv(m.programMap["u_MVPMatrix"], 1, byte(0), &mvpMatrix[0])
+    log.Println("u_MVPMatrix", mvpMatrix)
+    gles2.UniformMatrix4fv(m.programMap["u_MVMatrix"], 1, byte(0), &m.mvMatrix[0])
+    log.Println("u_MVMatrix", m.mvMatrix)
+
+    for attr, vb := range m.vbuffers{
+        gles2.BindBuffer(gles2.ARRAY_BUFFER, vb.buffer)
+        gles2.VertexAttribPointer(m.programMap[attr], int32(vb.size), gles2.FLOAT, byte(0), 0, nil)
+        log.Println("attr", attr)
+        gles2.EnableVertexAttribArray(m.programMap[attr])
+    }
+    gles2.BindBuffer(gles2.ELEMENT_ARRAY_BUFFER, m.ibuffer)
+    index := 0
+    gles2.Enable(gles2.CULL_FACE)
+    gles2.Enable(gles2.BLEND)
+    gles2.DrawElements(gles2.TRIANGLES, int32(len(m.pmd.Triangles)), gles2.UNSIGNED_INT, unsafe.Pointer(&index))
+    gles2.Disable(gles2.CULL_FACE)
+    gles2.Disable(gles2.BLEND)
+}
+
 func (m *PMDModel)Render(){
     m.computeMatrices()
     gles2.ClearColor(0.5, 0.5, 0.5, 1)
     gles2.ClearDepthf(1)
     gles2.Enable(gles2.DEPTH_TEST)
 
-    gles2.BindFramebuffer(gles2.FRAMEBUFFER, 0);
-    gles2.Viewport(m.x, m.y, m.width, m.height);
-    gles2.Clear(gles2.COLOR_BUFFER_BIT | gles2.DEPTH_BUFFER_BIT);
+    gles2.BindFramebuffer(gles2.FRAMEBUFFER, 0)
+    gles2.Viewport(m.x, m.y, m.width, m.height)
+    gles2.Clear(gles2.COLOR_BUFFER_BIT | gles2.DEPTH_BUFFER_BIT)
     for attr, vb := range m.vbuffers{
         gles2.BindBuffer(gles2.ARRAY_BUFFER, vb.buffer)
         gles2.VertexAttribPointer(m.programMap[attr], int32(vb.size), gles2.FLOAT, byte(0), 0, nil)
@@ -401,8 +508,8 @@ func (m *PMDModel)Render(){
         offset += material.FaceVertCount
     }
 
-    gles2.Disable(gles2.CULL_FACE);
-    gles2.Flush();
+    gles2.Disable(gles2.CULL_FACE)
+    gles2.Flush()
 }
 
 func (m *PMDModel)setSelfShadowTexture()  {

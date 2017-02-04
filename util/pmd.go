@@ -493,7 +493,7 @@ type PMD struct {
 
     Vertices []*PMDVertex
 
-    Triangles []int
+    Triangles []int32
 
     Materials []*PMDMaterial
 
@@ -676,17 +676,21 @@ func (p *PMD)parseTriangles() (err error){
     if count, err = p.fr.GetUInt32Little();err !=nil{
         return
     }
-    p.Triangles = make([]int, count)
+    p.Triangles = make([]int32, count)
+    var data int
     for i:= 0; i < count;i+=3{
-        if p.Triangles[i+1], err = p.fr.GetUInt16Little();err != nil{
+        if data, err = p.fr.GetUInt16Little();err != nil{
             return
         }
-        if p.Triangles[i], err = p.fr.GetUInt16Little();err != nil{
+        p.Triangles[i+1]=int32(data)
+        if data, err = p.fr.GetUInt16Little();err != nil{
             return
         }
-        if p.Triangles[i+2], err = p.fr.GetUInt16Little();err != nil{
+        p.Triangles[i]=int32(data)
+        if data, err = p.fr.GetUInt16Little();err != nil{
             return
         }
+        p.Triangles[i+2]=int32(data)
     }
     return
 }
