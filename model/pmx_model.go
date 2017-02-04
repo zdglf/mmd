@@ -11,7 +11,7 @@ func (m *PMXModel)LoadFile(filePath string, fileName string) bool  {
 func (m *PMXModel)InitShader(vShader string, fShader string) bool {
 	return true
 }
-func (m *PMXModel)InitParam(x int, y int, width int, height int){
+func (m *PMXModel)InitParam(x int32, y int32, width int32, height int32, toonDir string){
 
 }
 func (m *PMXModel)LoadMotion(filePath string) bool{

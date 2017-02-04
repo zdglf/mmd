@@ -66,9 +66,6 @@ func GetImageType(url string)(t string, err error)  {
     if _, err = f.Read(header);err != nil{
         return
     }
-    if _, err = f.ReadAt(footer, filesize-FOOTER_SIZE);err != nil{
-        return
-    }
     if bytes.Equal(PNG, header){
         t =  TYPE_PNG
         return
@@ -83,6 +80,9 @@ func GetImageType(url string)(t string, err error)  {
     }
     if bytes.Equal(JPG, header[:2]){
         t = TYPE_JPG
+        return
+    }
+    if _, err = f.ReadAt(footer, filesize-FOOTER_SIZE);err != nil{
         return
     }
     if bytes.Equal(TGA, footer){

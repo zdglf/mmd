@@ -260,6 +260,7 @@ func (m *PMDModel)initVertices() {
             gles2.BindBuffer(gles2.ARRAY_BUFFER, buffer[0])
             gles2.BufferData(gles2.ARRAY_BUFFER, 4*len(tmp.array), unsafe.Pointer(&tmp.array[0]), gles2.STATIC_DRAW)
             m.vbuffers[tmp.attribute] = GLBuf{tmp.size, buffer[0]}
+
         }
         gles2.BindBuffer(gles2.ARRAY_BUFFER, 0)
 
@@ -483,6 +484,7 @@ func (m *PMDModel)Render(){
     gles2.Enable(gles2.DEPTH_TEST)
 
     gles2.BindFramebuffer(gles2.FRAMEBUFFER, 0)
+    log.Println(m.x, m.y, m.width, m.height)
     gles2.Viewport(m.x, m.y, m.width, m.height)
     gles2.Clear(gles2.COLOR_BUFFER_BIT | gles2.DEPTH_BUFFER_BIT)
     for attr, vb := range m.vbuffers{
