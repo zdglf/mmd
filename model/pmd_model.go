@@ -28,12 +28,24 @@ type PMDModel struct {
     pmd *util.PMD
     programMap map[string]int32
 
-    cameraPosition mgl32.Vec3
+
     ignoreCameraMotion bool
     rotx float32
     roty float32
-    distance float32
-    center mgl32.Vec3
+
+    weight []float32
+    vectors1 []float32
+    vectors2 []float32
+    rotations1 []float32
+    rotations2 []float32
+    positions1 []float32
+    positions2 []float32
+    morphVec []float32
+    normals []float32
+    uvs []float32
+    edge []float32
+
+
     fovy float32
     drawEdge bool
     edgeThickness float32
@@ -48,11 +60,17 @@ type PMDModel struct {
     realFps float32
     playing bool
     frame int
+
+    distance float32
+    center mgl32.Vec3
+    cameraPosition mgl32.Vec3
     upPos mgl32.Vec3
+
     x int32
     y int32
     width int32
     height int32
+
 
     vbuffers map[string]GLBuf
     ibuffer int32
@@ -164,6 +182,7 @@ func (m *PMDModel)InitShader(vShader string, fShader string) bool {
         m.programMap[name] = int32(i)
         log.Println(i, name)
     }
+    log.Println("InitShader:", gles2.GetError())
 
     return true
 }
@@ -198,62 +217,63 @@ func (m *PMDModel)InitParam(x int32, y int32, width int32, height int32, toonDir
     if err := m.initTextures(toonDir);err!=nil{
         log.Println(err)
     }
+    log.Println("InitParam:", gles2.GetError())
 }
 
 func (m *PMDModel)initVertices() {
     m.vbuffers = make(map[string]GLBuf)
     if m.pmd != nil{
         length := len(m.pmd.Vertices)
-        weight := make([]float32, length)
-        vectors1 := make([]float32, 3*length)
-        vectors2 := make([]float32, 3*length)
-        rotations1 := make([]float32, 4*length)
-        rotations2 := make([]float32, 4*length)
-        positions1 := make([]float32, 3*length)
-        positions2 := make([]float32, 3*length)
-        morphVec := make([]float32, 3*length)
-        normals := make([]float32, 3*length)
-        uvs := make([]float32, 2*length)
-        edge := make([]float32, length)
+        m.weight = make([]float32, length)
+        m.vectors1 = make([]float32, 3*length)
+        m.vectors2 = make([]float32, 3*length)
+        m.rotations1 = make([]float32, 4*length)
+        m.rotations2 = make([]float32, 4*length)
+        m.positions1 = make([]float32, 3*length)
+        m.positions2 = make([]float32, 3*length)
+        m.morphVec = make([]float32, 3*length)
+        m.normals = make([]float32, 3*length)
+        m.uvs = make([]float32, 2*length)
+        m.edge = make([]float32, length)
 
         for i:= 0; i< length; i++ {
             vertex := m.pmd.Vertices[i]
             bone1 := m.pmd.Bones[vertex.BoneNum1]
             bone2 := m.pmd.Bones[vertex.BoneNum2]
-            weight[i] = float32(vertex.BoneWeight)
-            vectors1[3 * i] = vertex.X - bone1.HeadPos[0]
-            vectors1[3 * i + 1] = vertex.Y - bone1.HeadPos[1]
-            vectors1[3 * i + 2] = vertex.Z - bone1.HeadPos[2]
-            vectors2[3 * i] = vertex.X - bone2.HeadPos[0]
-            vectors2[3 * i + 1] = vertex.Y - bone2.HeadPos[1]
-            vectors2[3 * i + 2] = vertex.Z - bone2.HeadPos[2]
-            positions1[3 * i] = bone1.HeadPos[0]
-            positions1[3 * i + 1] = bone1.HeadPos[1]
-            positions1[3 * i + 2] = bone1.HeadPos[2]
-            positions2[3 * i] = bone2.HeadPos[0]
-            positions2[3 * i + 1] = bone2.HeadPos[1]
-            positions2[3 * i + 2] = bone2.HeadPos[2]
-            rotations1[4 * i + 3] = 1
-            rotations2[4 * i + 3] = 1
-            normals[3 * i] = vertex.NX
-            normals[3 * i + 1] = vertex.NY
-            normals[3 * i + 2] = vertex.NZ
-            uvs[2 * i] = vertex.U
-            uvs[2 * i + 1] = vertex.V
-            edge[i] = 1. - float32(vertex.EdgeFlag)
+            m.weight[i] = float32(vertex.BoneWeight)
+            m.vectors1[3 * i] = vertex.X - bone1.HeadPos[0]
+            m.vectors1[3 * i + 1] = vertex.Y - bone1.HeadPos[1]
+            m.vectors1[3 * i + 2] = vertex.Z - bone1.HeadPos[2]
+            m.vectors2[3 * i] = vertex.X - bone2.HeadPos[0]
+            m.vectors2[3 * i + 1] = vertex.Y - bone2.HeadPos[1]
+            m.vectors2[3 * i + 2] = vertex.Z - bone2.HeadPos[2]
+            m.positions1[3 * i] = bone1.HeadPos[0]
+            m.positions1[3 * i + 1] = bone1.HeadPos[1]
+            m.positions1[3 * i + 2] = bone1.HeadPos[2]
+            m.positions2[3 * i] = bone2.HeadPos[0]
+            m.positions2[3 * i + 1] = bone2.HeadPos[1]
+            m.positions2[3 * i + 2] = bone2.HeadPos[2]
+            m.rotations1[4 * i + 3] = 1
+            m.rotations2[4 * i + 3] = 1
+            m.normals[3 * i] = vertex.NX
+            m.normals[3 * i + 1] = vertex.NY
+            m.normals[3 * i + 2] = vertex.NZ
+            m.uvs[2 * i] = vertex.U
+            m.uvs[2 * i + 1] = vertex.V
+            m.edge[i] = 1. - float32(vertex.EdgeFlag)
         }
         tmpArr := make([]AttrArrBuf, 0)
-        tmpArr = append(tmpArr, AttrArrBuf{1, weight, "aBoneWeight"})
-        tmpArr = append(tmpArr, AttrArrBuf{3, vectors1, "aVectorFromBone1"})
-        tmpArr = append(tmpArr, AttrArrBuf{3, vectors2, "aVectorFromBone2"})
-        tmpArr = append(tmpArr, AttrArrBuf{4, rotations1, "aBone1Rotation"})
-        tmpArr = append(tmpArr, AttrArrBuf{4, rotations2, "aBone2Rotation"})
-        tmpArr = append(tmpArr, AttrArrBuf{3, positions1, "aBone1Position"})
-        tmpArr = append(tmpArr, AttrArrBuf{3, positions2, "aBone2Position"})
-        tmpArr = append(tmpArr, AttrArrBuf{3, morphVec, "aMultiPurposeVector"})
-        tmpArr = append(tmpArr, AttrArrBuf{3, normals, "aVertexNormal"})
-        tmpArr = append(tmpArr, AttrArrBuf{2, uvs, "aTextureCoord"})
-        tmpArr = append(tmpArr, AttrArrBuf{1, edge, "aVertexEdge"})
+        tmpArr = append(tmpArr, AttrArrBuf{1, m.weight, "aBoneWeight"})
+        tmpArr = append(tmpArr, AttrArrBuf{3, m.vectors1, "aVectorFromBone1"})
+        tmpArr = append(tmpArr, AttrArrBuf{3, m.vectors2, "aVectorFromBone2"})
+        tmpArr = append(tmpArr, AttrArrBuf{4, m.rotations1, "aBone1Rotation"})
+        tmpArr = append(tmpArr, AttrArrBuf{4, m.rotations2, "aBone2Rotation"})
+        tmpArr = append(tmpArr, AttrArrBuf{3, m.positions1, "aBone1Position"})
+        tmpArr = append(tmpArr, AttrArrBuf{3, m.positions2, "aBone2Position"})
+        tmpArr = append(tmpArr, AttrArrBuf{3, m.morphVec, "aMultiPurposeVector"})
+        tmpArr = append(tmpArr, AttrArrBuf{3, m.normals, "aVertexNormal"})
+        tmpArr = append(tmpArr, AttrArrBuf{2, m.uvs, "aTextureCoord"})
+        tmpArr = append(tmpArr, AttrArrBuf{1, m.edge, "aVertexEdge"})
         for _, tmp := range tmpArr{
             buffer := make([]int32, 1)
             gles2.GenBuffers(1, buffer)
@@ -263,19 +283,21 @@ func (m *PMDModel)initVertices() {
 
         }
         gles2.BindBuffer(gles2.ARRAY_BUFFER, 0)
+        log.Println("initVertices:", gles2.GetError())
 
     }
 
 }
 
 func (m *PMDModel)initIndices() {
-    indices := m.pmd.Triangles
-    buffer := make([]int32, 1)
-    gles2.GenBuffers(1, buffer)
-    gles2.BindBuffer(gles2.ELEMENT_ARRAY_BUFFER, buffer[0])
-    gles2.BufferData(gles2.ELEMENT_ARRAY_BUFFER, 4*len(indices), unsafe.Pointer(&indices[0]), gles2.STATIC_DRAW)
-    m.ibuffer = buffer[0]
-    log.Println("index count:", len(indices),"buf:",m.ibuffer)
+    //buffer := make([]int32, 1)
+    //gles2.GenBuffers(1, buffer)
+    //gles2.BindBuffer(gles2.ELEMENT_ARRAY_BUFFER, buffer[0])
+    //gles2.BufferData(gles2.ELEMENT_ARRAY_BUFFER, 4*len(m.pmd.Triangles), unsafe.Pointer(&m.pmd.Triangles[0]), gles2.STATIC_DRAW)
+    //m.ibuffer = buffer[0]
+    //log.Println("index count:", len(m.pmd.Triangles),"buf:",m.ibuffer)
+    //gles2.BindBuffer(gles2.ELEMENT_ARRAY_BUFFER, 0)
+    //log.Println("initIndices:", gles2.GetError())
 
 }
 
@@ -338,6 +360,7 @@ func (m *PMDModel)initTextures(toonDir string)(err error) {
         }
 
     }
+    log.Println("initTextures:", gles2.GetError())
     return
 
 }
@@ -372,111 +395,6 @@ func (m *PMDModel)computeMatrices(){
 
 }
 
-func (m *PMDModel)DebugInitParam(x int32, y int32, width int32, height int32){
-    m.vbuffers = make(map[string]GLBuf)
-    if m.pmd != nil{
-        length := len(m.pmd.Vertices)
-
-        positions := make([]float32, 4*length)
-        normals := make([]float32, 3*length)
-        colors := make([]float32, 4*length)
-
-        for i:= 0; i< length; i++ {
-            vertex := m.pmd.Vertices[i]
-            normals[3 * i] = vertex.NX
-            normals[3 * i + 1] = vertex.NY
-            normals[3 * i + 2] = vertex.NZ
-            positions[3 * i] = vertex.X
-            positions[3 * i + 1] = vertex.Y
-            positions[3 * i + 2] = vertex.Z
-            colors[4 * i] = 1.
-            colors[4 * i + 1] = 1.
-            colors[4 * i + 2] = 1.
-            colors[4 * i + 3] = 1.
-        }
-        tmpArr := make([]AttrArrBuf, 0)
-        tmpArr = append(tmpArr, AttrArrBuf{4, colors, "a_Color"})
-        tmpArr = append(tmpArr, AttrArrBuf{3, positions, "a_Position"})
-        tmpArr = append(tmpArr, AttrArrBuf{3, normals, "a_Normal"})
-        for _, tmp := range tmpArr{
-            buffer := make([]int32, 1)
-            gles2.GenBuffers(1, buffer)
-            gles2.BindBuffer(gles2.ARRAY_BUFFER, buffer[0])
-            gles2.BufferData(gles2.ARRAY_BUFFER, 4*len(tmp.array), unsafe.Pointer(&tmp.array[0]), gles2.STATIC_DRAW)
-            m.vbuffers[tmp.attribute] = GLBuf{tmp.size, buffer[0]}
-        }
-        gles2.BindBuffer(gles2.ARRAY_BUFFER, 0)
-
-        indices := m.pmd.Triangles
-        buffer := make([]int32, 1)
-        gles2.GenBuffers(1, buffer)
-        gles2.BindBuffer(gles2.ELEMENT_ARRAY_BUFFER, buffer[0])
-        gles2.BufferData(gles2.ELEMENT_ARRAY_BUFFER, 4*len(indices), unsafe.Pointer(&indices[0]), gles2.STATIC_DRAW)
-        m.ibuffer = buffer[0]
-        log.Println("index count:", len(indices),"buf:",m.ibuffer)
-        m.x = x
-        m.y = y
-        m.width = width
-        m.height = height
-
-    }
-}
-
-func (m *PMDModel)DebugRender(){
-    gles2.ClearColor(0.5, 0.5, 0.5, 0.5)
-    gles2.ClearDepthf(1)
-    gles2.Enable(gles2.DEPTH_TEST)
-    gles2.Enable(gles2.CULL_FACE)
-    gles2.BindFramebuffer(gles2.FRAMEBUFFER, 0)
-    gles2.Clear(gles2.COLOR_BUFFER_BIT | gles2.DEPTH_BUFFER_BIT)
-    m.distance = 15.0
-    m.cameraPosition = mgl32.Vec3{0.0, 0.0,-m.distance}
-    m.center =  mgl32.Vec3{0.0, 10.0, 0.0}
-    m.upPos = mgl32.Vec3{0, 1,0.0}
-    m.viewMatrix = mgl32.LookAtV(m.cameraPosition, m.center, m.upPos)
-    log.Println("viewMatrix", m.viewMatrix)
-    gles2.Viewport(m.x,m.y,m.width,m.height)
-
-    ratio := float32(m.width) / float32(m.height)
-    left := -ratio
-    right := ratio
-    var bottom float32 = -1.0
-    var top float32 = 1.0
-    var near float32 = 1.0
-    var far float32 = 60.0
-
-    m.pMatrix = mgl32.Frustum(left, right, bottom, top, near, far)
-    log.Println("pMatrix", m.pMatrix)
-    m.modelMatrix = mgl32.Ident4()
-    log.Println("modelMatrix", m.modelMatrix)
-    m.mvMatrix = m.viewMatrix.Mul4(m.modelMatrix)
-
-    mvpMatrix := m.pMatrix.Mul4(m.mvMatrix)
-
-    lightPosition := mgl32.Vec3{50,50,50}
-
-    gles2.Uniform3fv(m.programMap["u_LightPos"], 1, &lightPosition[0])
-    log.Println("u_LightPos", lightPosition)
-    gles2.UniformMatrix4fv(m.programMap["u_MVPMatrix"], 1, byte(0), &mvpMatrix[0])
-    log.Println("u_MVPMatrix", mvpMatrix)
-    gles2.UniformMatrix4fv(m.programMap["u_MVMatrix"], 1, byte(0), &m.mvMatrix[0])
-    log.Println("u_MVMatrix", m.mvMatrix)
-
-    for attr, vb := range m.vbuffers{
-        gles2.BindBuffer(gles2.ARRAY_BUFFER, vb.buffer)
-        gles2.VertexAttribPointer(m.programMap[attr], int32(vb.size), gles2.FLOAT, byte(0), 0, nil)
-        log.Println("attr", attr)
-        gles2.EnableVertexAttribArray(m.programMap[attr])
-    }
-    gles2.BindBuffer(gles2.ELEMENT_ARRAY_BUFFER, m.ibuffer)
-    index := 0
-    gles2.Enable(gles2.CULL_FACE)
-    gles2.Enable(gles2.BLEND)
-    gles2.DrawElements(gles2.TRIANGLES, int32(len(m.pmd.Triangles)), gles2.UNSIGNED_INT, unsafe.Pointer(&index))
-    gles2.Disable(gles2.CULL_FACE)
-    gles2.Disable(gles2.BLEND)
-}
-
 func (m *PMDModel)Render(){
     m.computeMatrices()
     gles2.ClearColor(0.5, 0.5, 0.5, 1)
@@ -484,14 +402,14 @@ func (m *PMDModel)Render(){
     gles2.Enable(gles2.DEPTH_TEST)
 
     gles2.BindFramebuffer(gles2.FRAMEBUFFER, 0)
-    log.Println(m.x, m.y, m.width, m.height)
     gles2.Viewport(m.x, m.y, m.width, m.height)
     gles2.Clear(gles2.COLOR_BUFFER_BIT | gles2.DEPTH_BUFFER_BIT)
     for attr, vb := range m.vbuffers{
         gles2.BindBuffer(gles2.ARRAY_BUFFER, vb.buffer)
         gles2.VertexAttribPointer(m.programMap[attr], int32(vb.size), gles2.FLOAT, byte(0), 0, nil)
     }
-    gles2.BindBuffer(gles2.ELEMENT_ARRAY_BUFFER, m.ibuffer)
+    //gles2.BindBuffer(gles2.ELEMENT_ARRAY_BUFFER, m.ibuffer)
+    log.Println("Render_SetVBO:", gles2.GetError())
     m.setSelfShadowTexture()
     m.setUniforms()
     gles2.Enable(gles2.CULL_FACE)
@@ -512,6 +430,7 @@ func (m *PMDModel)Render(){
 
     gles2.Disable(gles2.CULL_FACE)
     gles2.Flush()
+    log.Println("Render:", gles2.GetError())
 }
 
 func (m *PMDModel)setSelfShadowTexture()  {
@@ -540,6 +459,7 @@ func (m *PMDModel)setUniforms()  {
     gles2.Uniform1i(m.programMap["uGenerateShadowMap"], 0)
     gles2.Uniform1i(m.programMap["uAxis"], 0)
     gles2.Uniform1i(m.programMap["uCenterPoint"], 0)
+    log.Println("setUniforms:", gles2.GetError())
     
 
 }
@@ -584,18 +504,20 @@ func (m *PMDModel)renderMaterial(material *util.PMDMaterial, offset int)  {
         gles2.Uniform1i(m.programMap["uUseSphereMap"], 0)
     }
     gles2.CullFace(gles2.FRONT)
-    index := offset * 4
-    gles2.DrawElements(gles2.TRIANGLES, int32(material.FaceVertCount), gles2.UNSIGNED_INT, unsafe.Pointer(&index))
+
+    log.Println("renderMaterialMiddle", gles2.GetError(), "index ",offset, "face count: ", material.FaceVertCount)
+    gles2.DrawElements(gles2.TRIANGLES, int32(material.FaceVertCount), gles2.UNSIGNED_INT, unsafe.Pointer(&m.pmd.Triangles[offset]))
+    log.Println("renderMaterial:", gles2.GetError())
 }
 
 func (m *PMDModel)renderEdge(material *util.PMDMaterial, offset int)  {
     if (!m.drawEdge || material.EdgeFlag==0) {
         return
     }
-    index := offset * 4
     gles2.Uniform1i(m.programMap["uEdge"], 1)
     gles2.CullFace(gles2.BACK)
-    gles2.DrawElements(gles2.TRIANGLES, int32(material.FaceVertCount), gles2.UNSIGNED_INT, unsafe.Pointer(&index))
+    gles2.DrawElements(gles2.TRIANGLES, int32(material.FaceVertCount), gles2.UNSIGNED_INT, unsafe.Pointer(&m.pmd.Triangles[offset]))
     gles2.CullFace(gles2.FRONT);
     gles2.Uniform1i(m.programMap["uEdge"], 0)
+    log.Println("renderEdge:", gles2.GetError())
 }

@@ -88,6 +88,7 @@ func (tm *TextureManager)Get(t string, url string)(texture int32, err error){
     gles2.GenerateMipmap(gles2.TEXTURE_2D)
     gles2.BindTexture(gles2.TEXTURE_2D, 0)
     tm.stores[url] = texture
+    log.Println("texture Get:", gles2.GetError())
     return
 
 }
