@@ -73,7 +73,6 @@ type PMDModel struct {
 
 
     vbuffers map[string]GLBuf
-    ibuffer int32
 
     textureManager *TextureManager
 
@@ -213,7 +212,6 @@ func (m *PMDModel)InitParam(x int32, y int32, width int32, height int32, toonDir
     m.width = width
     m.height = height
     m.initVertices()
-    m.initIndices()
     if err := m.initTextures(toonDir);err!=nil{
         log.Println(err)
     }
@@ -286,18 +284,6 @@ func (m *PMDModel)initVertices() {
         log.Println("initVertices:", gles2.GetError())
 
     }
-
-}
-
-func (m *PMDModel)initIndices() {
-    //buffer := make([]int32, 1)
-    //gles2.GenBuffers(1, buffer)
-    //gles2.BindBuffer(gles2.ELEMENT_ARRAY_BUFFER, buffer[0])
-    //gles2.BufferData(gles2.ELEMENT_ARRAY_BUFFER, 4*len(m.pmd.Triangles), unsafe.Pointer(&m.pmd.Triangles[0]), gles2.STATIC_DRAW)
-    //m.ibuffer = buffer[0]
-    //log.Println("index count:", len(m.pmd.Triangles),"buf:",m.ibuffer)
-    //gles2.BindBuffer(gles2.ELEMENT_ARRAY_BUFFER, 0)
-    //log.Println("initIndices:", gles2.GetError())
 
 }
 
@@ -408,8 +394,6 @@ func (m *PMDModel)Render(){
         gles2.BindBuffer(gles2.ARRAY_BUFFER, vb.buffer)
         gles2.VertexAttribPointer(m.programMap[attr], int32(vb.size), gles2.FLOAT, byte(0), 0, nil)
     }
-    //gles2.BindBuffer(gles2.ELEMENT_ARRAY_BUFFER, m.ibuffer)
-    log.Println("Render_SetVBO:", gles2.GetError())
     m.setSelfShadowTexture()
     m.setUniforms()
     gles2.Enable(gles2.CULL_FACE)
@@ -430,7 +414,6 @@ func (m *PMDModel)Render(){
 
     gles2.Disable(gles2.CULL_FACE)
     gles2.Flush()
-    log.Println("Render:", gles2.GetError())
 }
 
 func (m *PMDModel)setSelfShadowTexture()  {
@@ -504,10 +487,8 @@ func (m *PMDModel)renderMaterial(material *util.PMDMaterial, offset int)  {
         gles2.Uniform1i(m.programMap["uUseSphereMap"], 0)
     }
     gles2.CullFace(gles2.FRONT)
-
-    log.Println("renderMaterialMiddle", gles2.GetError(), "index ",offset, "face count: ", material.FaceVertCount)
     gles2.DrawElements(gles2.TRIANGLES, int32(material.FaceVertCount), gles2.UNSIGNED_INT, unsafe.Pointer(&m.pmd.Triangles[offset]))
-    log.Println("renderMaterial:", gles2.GetError())
+
 }
 
 func (m *PMDModel)renderEdge(material *util.PMDMaterial, offset int)  {
@@ -519,5 +500,5 @@ func (m *PMDModel)renderEdge(material *util.PMDMaterial, offset int)  {
     gles2.DrawElements(gles2.TRIANGLES, int32(material.FaceVertCount), gles2.UNSIGNED_INT, unsafe.Pointer(&m.pmd.Triangles[offset]))
     gles2.CullFace(gles2.FRONT);
     gles2.Uniform1i(m.programMap["uEdge"], 0)
-    log.Println("renderEdge:", gles2.GetError())
+
 }
