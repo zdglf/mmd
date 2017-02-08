@@ -7,6 +7,7 @@ import (
     "golang.org/x/text/encoding/unicode"
     "log"
     "path"
+    "strings"
 )
 
 const(
@@ -553,6 +554,7 @@ const(
     MATERIAL_MODE_DISABLE int = iota
     MATERIAL_MODE_SPH
     MATERIAL_MODE_SPA
+    MATERIAL_MODE_SPS
 )
 type PMXMaterial struct {
     Name string
@@ -573,6 +575,8 @@ type PMXMaterial struct {
     MetaData string
     //影响的vertex 数量
     SurfaceCount int
+
+    Textures map[string]int32
 }
 
 func NewPMXMaterial(f *FileReader, sizes[]int , decoder *encoding.Decoder)(m *PMXMaterial,err error)  {
@@ -1281,7 +1285,7 @@ type PMX struct {
 
     Vertices []*PMXVertex
 
-    Triangles []int
+    Triangles []int32
 
     Materials []*PMXMaterial
 
@@ -1439,11 +1443,21 @@ func (p *PMX)parseTriangles()(err error)  {
     if count, err = p.fr.GetInt32Little(); err != nil{
         return
     }
-    p.Triangles = make([]int, count)
-    for i := 0;i < count; i++ {
-        if p.Triangles[i], err = p.fr.GetIntLittle(vertexIndexSize); err != nil{
+    p.Triangles = make([]int32, count)
+    var data int
+    for i := 0;i < count; i+=3 {
+        if data, err = p.fr.GetIntLittle(vertexIndexSize); err != nil{
             return
         }
+        p.Triangles[i+1] = int32(data)
+        if data, err = p.fr.GetIntLittle(vertexIndexSize); err != nil{
+            return
+        }
+        p.Triangles[i] = int32(data)
+        if data, err = p.fr.GetIntLittle(vertexIndexSize); err != nil{
+            return
+        }
+        p.Triangles[i+2] = int32(data)
     }
     return
 
@@ -1462,6 +1476,7 @@ func (p *PMX)parseTextures()(err error)  {
         if p.Textures[i], err = p.fr.GetString(size, p.decoder); err != nil{
             return
         }
+        p.Textures[i] = strings.Replace(p.Textures[i], "\\", "/", -1)
     }
     return
 

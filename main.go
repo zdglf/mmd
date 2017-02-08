@@ -4,9 +4,9 @@ import "strings"
 
 func main() {
 
-    a := "    "
+    a := "\\fsdf\\sdfa\\dfasd\\fasdf\\dfsa"
 
-    b := strings.Trim(a, " ")
+    b := strings.Replace(a, "\\", "/", 0)
     println(b)
 
 

@@ -12,17 +12,6 @@ import (
     "unsafe"
 )
 
-type GLBuf struct {
-    size int
-    buffer int32
-}
-
-type AttrArrBuf struct {
-    size int
-    array []float32
-    attribute string
-}
-
 type PMDModel struct {
     program int32
     pmd *util.PMD

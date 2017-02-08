@@ -11,7 +11,7 @@ import (
 type CubeModel struct {
     program int32
     programMap map[string]int32
-    pmd *util.PMD
+    pmx *util.PMX
 
     cubePositionData []float32
     a_position int32
@@ -19,8 +19,6 @@ type CubeModel struct {
     a_color int32
     cubeNormalData []float32
     a_normal int32
-    indices []int32
-    a_index int32
 
     x int32
     y int32
@@ -40,15 +38,15 @@ type CubeModel struct {
 }
 
 func (m *CubeModel)LoadFile(filePath string, fileName string) bool  {
-    m.pmd = new(util.PMD)
+    m.pmx = new(util.PMX)
     log.Println("start pmd load")
-    if err := m.pmd.Load(filePath, fileName); err != nil{
-        m.pmd = nil
+    if err := m.pmx.Load(filePath, fileName); err != nil{
+        m.pmx = nil
         log.Println(err)
         return false
     }else {
-        log.Println(m.pmd.Name)
-        log.Println(m.pmd.Comment)
+        log.Println(m.pmx.Name)
+        log.Println(m.pmx.Comment)
         return true
     }
 }
@@ -152,8 +150,8 @@ func (m *CubeModel)InitParam(x int32, y int32, width int32, height int32, toonDi
     m.height = height
     m.width  = width
 
-    m.cameraPosition = mgl32.Vec3{5.0, 5.0,-5}
-    m.center =  mgl32.Vec3{0.0, 0.0,0.0}
+    m.cameraPosition = mgl32.Vec3{0.0, 0.0, -15.0}
+    m.center =  mgl32.Vec3{0.0, 10.0, 0.0}
     m.upPos = mgl32.Vec3{0.0, 1.0,0.0}
     m.viewMatrix = mgl32.LookAtV(m.cameraPosition, m.center, m.upPos)
     log.Println("viewMatrix", m.viewMatrix)
@@ -166,19 +164,19 @@ func (m *CubeModel)InitParam(x int32, y int32, width int32, height int32, toonDi
     var bottom float32 = -1.0
     var top float32 = 1.0
     var near float32 = 1.0
-    var far float32 = 20.0
+    var far float32 = 60.0
 
     m.pMatrix = mgl32.Frustum(left, right, bottom, top, near, far)
     log.Println("pMatrix", m.pMatrix)
-    if m.pmd == nil {
-        length := len(m.pmd.Vertices)
+    if m.pmx != nil {
+        length := len(m.pmx.Vertices)
 
         m.cubePositionData = make([]float32, 3 * length)
         m.cubeNormalData = make([]float32, 3 * length)
         m.cubeColorData = make([]float32, 4 * length)
 
         for i := 0; i < length; i++ {
-            vertex := m.pmd.Vertices[i]
+            vertex := m.pmx.Vertices[i]
             m.cubeNormalData[3 * i] = vertex.NX
             m.cubeNormalData[3 * i + 1] = vertex.NY
             m.cubeNormalData[3 * i + 2] = vertex.NZ
@@ -189,171 +187,6 @@ func (m *CubeModel)InitParam(x int32, y int32, width int32, height int32, toonDi
             m.cubeColorData[4 * i + 1] = 1.
             m.cubeColorData[4 * i + 2] = 0.
             m.cubeColorData[4 * i + 3] = 1.
-        }
-    }else {
-
-        m.indices = []int32{
-            0 , 1, 2, 3, 4, 5,
-            6 , 7, 8, 9,10,11,
-            12,13,14,15,16,17,
-            18,19,20,21,22,23,
-            24,25,26,27,28,29,
-            30,31,32,33,34,35,
-        }
-
-        m.cubePositionData = []float32{
-            // In OpenGL counter-clockwise winding is default. This means that when we look at a triangle,
-            // if the points are counter-clockwise we are looking at the "front". If not we are looking at
-            // the back. OpenGL has an optimization where all back-facing triangles are culled, since they
-            // usually represent the backside of an object and aren't visible anyways.
-
-            // Front face
-            -1.0, 1.0, 1.0,
-            -1.0, -1.0, 1.0,
-            1.0, 1.0, 1.0,
-            -1.0, -1.0, 1.0,
-            1.0, -1.0, 1.0,
-            1.0, 1.0, 1.0,
-
-            // Right face
-            1.0, 1.0, 1.0,
-            1.0, -1.0, 1.0,
-            1.0, 1.0, -1.0,
-            1.0, -1.0, 1.0,
-            1.0, -1.0, -1.0,
-            1.0, 1.0, -1.0,
-
-            // Back face
-            1.0, 1.0, -1.0,
-            1.0, -1.0, -1.0,
-            -1.0, 1.0, -1.0,
-            1.0, -1.0, -1.0,
-            -1.0, -1.0, -1.0,
-            -1.0, 1.0, -1.0,
-
-            // Left face
-            -1.0, 1.0, -1.0,
-            -1.0, -1.0, -1.0,
-            -1.0, 1.0, 1.0,
-            -1.0, -1.0, -1.0,
-            -1.0, -1.0, 1.0,
-            -1.0, 1.0, 1.0,
-
-            // Top face
-            -1.0, 1.0, -1.0,
-            -1.0, 1.0, 1.0,
-            1.0, 1.0, -1.0,
-            -1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0,
-            1.0, 1.0, -1.0,
-
-            // Bottom face
-            1.0, -1.0, -1.0,
-            1.0, -1.0, 1.0,
-            -1.0, -1.0, -1.0,
-            1.0, -1.0, 1.0,
-            -1.0, -1.0, 1.0,
-            -1.0, -1.0, -1.0,
-        }
-
-        m.cubeColorData = []float32{
-            // Front face (red)
-            1.0, 0.0, 0.0, 1.0,
-            1.0, 0.0, 0.0, 1.0,
-            1.0, 0.0, 0.0, 1.0,
-            1.0, 0.0, 0.0, 1.0,
-            1.0, 0.0, 0.0, 1.0,
-            1.0, 0.0, 0.0, 1.0,
-
-            // Right face (green)
-            0.0, 1.0, 0.0, 1.0,
-            0.0, 1.0, 0.0, 1.0,
-            0.0, 1.0, 0.0, 1.0,
-            0.0, 1.0, 0.0, 1.0,
-            0.0, 1.0, 0.0, 1.0,
-            0.0, 1.0, 0.0, 1.0,
-
-            // Back face (blue)
-            0.0, 0.0, 1.0, 1.0,
-            0.0, 0.0, 1.0, 1.0,
-            0.0, 0.0, 1.0, 1.0,
-            0.0, 0.0, 1.0, 1.0,
-            0.0, 0.0, 1.0, 1.0,
-            0.0, 0.0, 1.0, 1.0,
-
-            // Left face (yellow)
-            1.0, 1.0, 0.0, 1.0,
-            1.0, 1.0, 0.0, 1.0,
-            1.0, 1.0, 0.0, 1.0,
-            1.0, 1.0, 0.0, 1.0,
-            1.0, 1.0, 0.0, 1.0,
-            1.0, 1.0, 0.0, 1.0,
-
-            // Top face (cyan)
-            0.0, 1.0, 1.0, 1.0,
-            0.0, 1.0, 1.0, 1.0,
-            0.0, 1.0, 1.0, 1.0,
-            0.0, 1.0, 1.0, 1.0,
-            0.0, 1.0, 1.0, 1.0,
-            0.0, 1.0, 1.0, 1.0,
-
-            // Bottom face (magenta)
-            1.0, 0.0, 1.0, 1.0,
-            1.0, 0.0, 1.0, 1.0,
-            1.0, 0.0, 1.0, 1.0,
-            1.0, 0.0, 1.0, 1.0,
-            1.0, 0.0, 1.0, 1.0,
-            1.0, 0.0, 1.0, 1.0,
-        }
-
-        m.cubeNormalData = []float32{
-            // Front face
-            0.0, 0.0, 1.0,
-            0.0, 0.0, 1.0,
-            0.0, 0.0, 1.0,
-            0.0, 0.0, 1.0,
-            0.0, 0.0, 1.0,
-            0.0, 0.0, 1.0,
-
-            // Right face
-            1.0, 0.0, 0.0,
-            1.0, 0.0, 0.0,
-            1.0, 0.0, 0.0,
-            1.0, 0.0, 0.0,
-            1.0, 0.0, 0.0,
-            1.0, 0.0, 0.0,
-
-            // Back face
-            0.0, 0.0, -1.0,
-            0.0, 0.0, -1.0,
-            0.0, 0.0, -1.0,
-            0.0, 0.0, -1.0,
-            0.0, 0.0, -1.0,
-            0.0, 0.0, -1.0,
-
-            // Left face
-            -1.0, 0.0, 0.0,
-            -1.0, 0.0, 0.0,
-            -1.0, 0.0, 0.0,
-            -1.0, 0.0, 0.0,
-            -1.0, 0.0, 0.0,
-            -1.0, 0.0, 0.0,
-
-            // Top face
-            0.0, 1.0, 0.0,
-            0.0, 1.0, 0.0,
-            0.0, 1.0, 0.0,
-            0.0, 1.0, 0.0,
-            0.0, 1.0, 0.0,
-            0.0, 1.0, 0.0,
-
-            // Bottom face
-            0.0, -1.0, 0.0,
-            0.0, -1.0, 0.0,
-            0.0, -1.0, 0.0,
-            0.0, -1.0, 0.0,
-            0.0, -1.0, 0.0,
-            0.0, -1.0, 0.0,
         }
         buffer := make([]int32, 1)
         gles2.GenBuffers(1, buffer)
@@ -368,12 +201,7 @@ func (m *CubeModel)InitParam(x int32, y int32, width int32, height int32, toonDi
         gles2.BufferData(gles2.ARRAY_BUFFER, 4*len(m.cubePositionData), unsafe.Pointer(&m.cubePositionData[0]), gles2.STATIC_DRAW)
         m.a_position = buffer[0]
 
-
-        buffer = make([]int32, 1)
-        gles2.GenBuffers(1, buffer)
-        gles2.BindBuffer(gles2.ELEMENT_ARRAY_BUFFER, buffer[0])
-        gles2.BufferData(gles2.ELEMENT_ARRAY_BUFFER, 4*len(m.indices), unsafe.Pointer(&m.indices[0]), gles2.STATIC_DRAW)
-        m.a_index = buffer[0]
+        gles2.BindBuffer(gles2.ARRAY_BUFFER, 0)
     }
 
 
@@ -406,6 +234,8 @@ func (m *CubeModel)Render (){
     gles2.VertexAttribPointer(m.programMap[attr], int32(size), gles2.FLOAT, byte(0), 0, nil)
     log.Println("attr", attr)
     gles2.EnableVertexAttribArray(m.programMap[attr])
+    e := gles2.GetError()
+    log.Println("position error: ", e, m.a_position)
 
     attr = "a_Color"
     size = 4
@@ -413,29 +243,20 @@ func (m *CubeModel)Render (){
     gles2.VertexAttribPointer(m.programMap[attr], int32(size), gles2.FLOAT, byte(0), 0, nil)
     log.Println("attr", attr)
     gles2.EnableVertexAttribArray(m.programMap[attr])
-    gles2.BindBuffer(gles2.ELEMENT_ARRAY_BUFFER,m.a_index)
-    //attr = "a_Normal"
-    //size = 3
-    //gles2.VertexAttribPointer(m.programMap[attr], int32(size), gles2.FLOAT, byte(0), 0, unsafe.Pointer(&m.cubeNormalData[0]))
-    //log.Println("attr", attr)
-    //gles2.EnableVertexAttribArray(m.programMap[attr])
+    e = gles2.GetError()
+    log.Println("color error: ", e, m.a_color)
 
-    //light := []float32{0,5.0,5.0}
 
-    //gles2.UniformMatrix4fv(m.programMap["u_MVMatrix"], 1, byte(0), &m.mvMatrix[0])
     gles2.UniformMatrix4fv(m.programMap["u_MVPMatrix"], 1, byte(0), &mvpMatrix[0])
-    //gles2.Uniform3fv(m.programMap["u_LightPos"], 1, &light[0])
 
-    index := 0
-    gles2.DrawElements(gles2.TRIANGLES, int32(36), gles2.UNSIGNED_INT, unsafe.Pointer(&index))
-    //gles2.DrawArrays(gles2.TRIANGLES, 0, 36)
-    e := gles2.GetError()
+    size = len(m.pmx.Triangles)
 
-    var maxLength int32 = 1024
-    infoBytes := make([]byte, maxLength)
-    var realLength int32
-    gles2.GetProgramInfoLog(m.program, maxLength, &realLength, infoBytes)
-    log.Println("runtime", string(infoBytes[:realLength]), e)
+    gles2.DrawElements(gles2.TRIANGLES, int32(size), gles2.UNSIGNED_INT, unsafe.Pointer(&m.pmx.Triangles[0]))
+
+    e = gles2.GetError()
+    log.Println("error: ", e)
+
+
 
 }
 

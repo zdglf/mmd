@@ -6,6 +6,7 @@ import (
     "errors"
     "log"
     "path"
+    "strings"
 )
 
 type PMDBone struct {
@@ -867,6 +868,7 @@ func (p *PMD)parseToonFileNames() (err error){
         if p.ToonFileNames[i], err = p.fr.GetStringTrim(100, japanese.ShiftJIS.NewDecoder());err != nil{
             return
         }
+        p.ToonFileNames[i] = strings.Replace(p.ToonFileNames[i], "\\", "/", -1)
     }
     return
 
