@@ -16,4 +16,5 @@ func TestVMD_Load(t *testing.T) {
     //}else{
     //    t.Error(v.ModelName, "is not 初音ミク(メタル服)")
     //}
+
 }

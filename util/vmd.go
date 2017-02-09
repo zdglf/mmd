@@ -5,6 +5,7 @@ import (
     "golang.org/x/text/encoding/japanese"
     "errors"
     "log"
+    "sort"
 )
 
 const (
@@ -178,16 +179,98 @@ func NewVMDSelfShadowKeyFrame(f *FileReader)(ss *VMDSelfShadowKeyFrame, err erro
     return
 }
 
+type VMDBoneKeyFrameList []*VMDBoneKeyFrame
+
+func (list VMDBoneKeyFrameList)Len() int {
+    return len(list)
+}
+
+func (list VMDBoneKeyFrameList)Less(i, j int) bool {
+    return list[i].Frame < list[j].Frame
+}
+
+func (list VMDBoneKeyFrameList)Swap(i, j int) {
+    var temp *VMDBoneKeyFrame = list[i]
+    list[i] = list[j]
+    list[j] = temp
+}
+
+type VMDLightKeyFrameList []*VMDLightKeyFrame
+
+
+func (list VMDLightKeyFrameList)Len() int {
+    return len(list)
+}
+
+func (list VMDLightKeyFrameList)Less(i, j int) bool {
+    return list[i].Frame < list[j].Frame
+}
+
+func (list VMDLightKeyFrameList)Swap(i, j int) {
+    var temp *VMDLightKeyFrame = list[i]
+    list[i] = list[j]
+    list[j] = temp
+}
+
+type VMDSelfShadowKeyFrameList []*VMDSelfShadowKeyFrame
+
+func (list VMDSelfShadowKeyFrameList)Len() int {
+    return len(list)
+}
+
+func (list VMDSelfShadowKeyFrameList)Less(i, j int) bool {
+    return list[i].Frame < list[j].Frame
+}
+
+func (list VMDSelfShadowKeyFrameList)Swap(i, j int) {
+    var temp *VMDSelfShadowKeyFrame = list[i]
+    list[i] = list[j]
+    list[j] = temp
+}
+
+type VMDCameraKeyFrameList []*VMDCameraKeyFrame
+
+func (list VMDCameraKeyFrameList)Len() int {
+    return len(list)
+}
+
+func (list VMDCameraKeyFrameList)Less(i, j int) bool {
+    return list[i].Frame < list[j].Frame
+}
+
+func (list VMDCameraKeyFrameList)Swap(i, j int) {
+    var temp *VMDCameraKeyFrame = list[i]
+    list[i] = list[j]
+    list[j] = temp
+}
+
+type VMDMorphKeyFrameList []*VMDMorphKeyFrame
+
+func (list VMDMorphKeyFrameList)Len() int {
+    return len(list)
+}
+
+func (list VMDMorphKeyFrameList)Less(i, j int) bool {
+    return list[i].Frame < list[j].Frame
+}
+
+func (list VMDMorphKeyFrameList)Swap(i, j int) {
+    var temp *VMDMorphKeyFrame = list[i]
+    list[i] = list[j]
+    list[j] = temp
+}
+
 type VMD struct {
     header string
     ModelName string
 
-    BoneFrames []*VMDBoneKeyFrame
-    LightFrames []*VMDLightKeyFrame
-    SelfShadowFrames []*VMDSelfShadowKeyFrame
-    CameraFrames []*VMDCameraKeyFrame
-    MorphFrames []*VMDMorphKeyFrame
+    BoneFrames VMDBoneKeyFrameList
+    LightFrames VMDLightKeyFrameList
+    SelfShadowFrames VMDSelfShadowKeyFrameList
+    CameraFrames VMDCameraKeyFrameList
+    MorphFrames VMDMorphKeyFrameList
 
+    maxFrame int
     fr *FileReader
 }
 
@@ -250,12 +333,16 @@ func (v *VMD)parseBoneFrame()(err error) {
     if count ,err = v.fr.GetUInt32Little(); err != nil{
         return
     }
-    v.BoneFrames = make([]*VMDBoneKeyFrame, count)
+    v.BoneFrames = VMDBoneKeyFrameList(make([]*VMDBoneKeyFrame, count))
     for i := 0; i < count; i++{
         if v.BoneFrames[i], err = NewVMDBoneKeyFrame(v.fr);err != nil{
             return
         }
+        if v.maxFrame < v.BoneFrames[i].Frame{
+            v.maxFrame = v.BoneFrames[i].Frame
+        }
     }
+    sort.Sort(v.BoneFrames)
     return
 }
 
@@ -265,12 +352,16 @@ func (v *VMD)parseMorphFrame()(err error) {
     if count ,err = v.fr.GetUInt32Little(); err != nil{
         return
     }
-    v.MorphFrames = make([]*VMDMorphKeyFrame, count)
+    v.MorphFrames = VMDMorphKeyFrameList(make([]*VMDMorphKeyFrame, count))
     for i := 0; i < count; i++{
         if v.MorphFrames[i], err = NewVMDMorphKeyFrame(v.fr);err != nil{
             return
         }
+        if v.maxFrame < v.MorphFrames[i].Frame{
+            v.maxFrame = v.MorphFrames[i].Frame
+        }
     }
+    sort.Sort(v.MorphFrames)
     return
 }
 
@@ -280,12 +371,16 @@ func (v *VMD)parseCameraFrame()(err error) {
     if count ,err = v.fr.GetUInt32Little(); err != nil{
         return
     }
-    v.CameraFrames = make([]*VMDCameraKeyFrame, count)
+    v.CameraFrames = VMDCameraKeyFrameList(make([]*VMDCameraKeyFrame, count))
     for i := 0; i < count; i++{
         if v.CameraFrames[i], err = NewVMDCameraKeyFrame(v.fr);err != nil{
             return
         }
+        if v.maxFrame < v.CameraFrames[i].Frame{
+            v.maxFrame = v.CameraFrames[i].Frame
+        }
     }
+    sort.Sort(v.CameraFrames)
     return
 }
 
@@ -295,12 +390,16 @@ func (v *VMD)parseLightFrame()(err error) {
     if count ,err = v.fr.GetUInt32Little(); err != nil{
         return
     }
-    v.LightFrames = make([]*VMDLightKeyFrame, count)
+    v.LightFrames = VMDLightKeyFrameList(make([]*VMDLightKeyFrame, count))
     for i := 0; i < count; i++{
         if v.LightFrames[i], err = NewVMDLightKeyFrame(v.fr);err != nil{
             return
         }
+        if v.maxFrame < v.LightFrames[i].Frame{
+            v.maxFrame = v.LightFrames[i].Frame
+        }
     }
+    sort.Sort(v.LightFrames)
     return
 }
 
@@ -310,12 +409,16 @@ func (v *VMD)parseSelfShadowFrame()(err error) {
     if count ,err = v.fr.GetUInt32Little(); err != nil{
         return
     }
-    v.SelfShadowFrames = make([]*VMDSelfShadowKeyFrame, count)
+    v.SelfShadowFrames = VMDSelfShadowKeyFrameList(make([]*VMDSelfShadowKeyFrame, count))
     for i := 0; i < count; i++{
         if v.SelfShadowFrames[i], err = NewVMDSelfShadowKeyFrame(v.fr);err != nil{
             return
         }
+        if v.maxFrame < v.SelfShadowFrames[i].Frame{
+            v.maxFrame = v.SelfShadowFrames[i].Frame
+        }
     }
+    sort.Sort(v.SelfShadowFrames)
     return
 }
 
