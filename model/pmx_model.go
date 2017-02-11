@@ -253,6 +253,9 @@ func (m *PMXModel)initTextures(toonDir string)(err error){
 			}
 
 		}
+		if(material.ToonValue == -1){
+			material.ToonValue = 0
+		}
 		switch material.ToonReference {
 		case util.MATERIAL_TEXTURE_REFERENCE:
 			log.Println("toon", material.ToonValue)
